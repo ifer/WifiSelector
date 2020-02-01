@@ -3,6 +3,7 @@ package ifer.android.wifiselector;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -30,8 +31,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity implements ServiceConnection {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
+
+    public static final String ACTION_DATA_REFRESH = "DataRefresh";
+
     public static final String SETTINGS_NAME = "wifi_prefs";
     public static final String PREF_SSIDS = "sel_ssids";
     public static final String TAG="WifiSelector";
@@ -39,11 +43,10 @@ public class MainActivity extends AppCompatActivity  {
     private ListView listView;
     private Button buttonScan;
     private Button buttonSave;
-    private String curSSID;
-
 
     private TextView tvCurSSID;
     private int size = 0;
+    private String curSSID;
     private ArrayList<WifiEntry> wifiArrayList;
     private ArrayList<String> registeredSSIDList;
     private ScanAdapter scanAdapter;
@@ -51,11 +54,14 @@ public class MainActivity extends AppCompatActivity  {
     private HashSet<String> selectedSSIDs;
 
     /* Options */
-    private boolean autoConnectToStrongest = true;
-    private boolean runInBackground = true;
-    private int alarmInterval = 1; //minutes
+//    private boolean autoConnectToStrongest = true;
+//    private boolean runInBackground = true;
+//    private int alarmInterval = 1; //minutes
+
+    private UserOptions userOptions = new UserOptions();
 
     private WifiService wifiService;
+    private UpdateReceiver updateReceiver;
 //    private BoundService mBoundService;
     private boolean serviceBound = false;
 
@@ -77,12 +83,15 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+        //TODO
+        //Check if wifi is enabled on device
+
         settings = getApplicationContext().getSharedPreferences(SETTINGS_NAME, 0);
 
 
-//        tvCurSSID = findViewById(R.id.curSSID);
-//
-//        listView = findViewById(R.id.wifiList);
+        tvCurSSID = findViewById(R.id.curSSID);
+
+        listView = findViewById(R.id.wifiList);
 
         requestPermissionForLocation();
 
@@ -93,30 +102,59 @@ public class MainActivity extends AppCompatActivity  {
             System.exit(1);
         }
 
-Log.d(TAG, "init app");
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
- Log.d(TAG, "Ready for service");
-        super.onStart();
+        //TODO
+        //to remove later
+        userOptions.getSelectedSSIDs().add("PB11WF5");
+        userOptions.getSelectedSSIDs().add("PB11WF6");
+        userOptions.getSelectedSSIDs().add("PB11WF7");
 
         Intent intent = new Intent(this, WifiService.class);
+        intent.putExtra("UserOptions", userOptions);
+
         startService(intent);
-        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        bindService(intent, this, Context.BIND_AUTO_CREATE);
+
     }
+
+    private void updateData(){
+        curSSID = wifiService.getWifiSSID(this);
+        registeredSSIDList = wifiService.getRegisteredSSIDList();
+        wifiArrayList = wifiService.getWifiArrayList();
+
+        scanAdapter = new ScanAdapter(this, wifiArrayList, curSSID, registeredSSIDList);
+
+        tvCurSSID.setText(curSSID);
+        listView.setAdapter(scanAdapter);
+
+    }
+
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (serviceBound && (! runInBackground)) {
-            unbindService(mServiceConnection);
+        if (serviceBound && (! userOptions.isRunInBackground())) {
+            unbindService(this);
             serviceBound = false;
         }
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if (updateReceiver == null) {
+            updateReceiver = new UpdateReceiver();
+        }
+        IntentFilter intentFilter = new IntentFilter(ACTION_DATA_REFRESH);
+        registerReceiver(updateReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        if (updateReceiver != null) {
+            unregisterReceiver(updateReceiver);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,22 +178,29 @@ Log.d(TAG, "init app");
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder binder) {
+//        LocalWordService.MyBinder b = (LocalWordService.MyBinder) binder;
+        WifiService.ServiceBinder b = (WifiService.ServiceBinder) binder;
+        wifiService = b.getService();
+        Log.d(TAG, "Service connected");
+//        updateData();
+    }
 
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        wifiService = null;
+    }
 
+    private class UpdateReceiver extends BroadcastReceiver {
         @Override
-        public void onServiceDisconnected(ComponentName name) {
-            serviceBound = false;
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_DATA_REFRESH)) {
+                updateData();
+            }
         }
+    }
 
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            WifiService.ServiceBinder binder = (WifiService.ServiceBinder) service;
-            wifiService = binder.getService();
-            serviceBound = true;
-        }
-
-    };
 
 
     private void requestPermissionForLocation() {
