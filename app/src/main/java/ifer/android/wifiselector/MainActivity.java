@@ -1,8 +1,6 @@
 package ifer.android.wifiselector;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,6 +9,8 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,6 +19,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -84,7 +85,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         });
 
         //TODO
-        //Check if wifi is enabled on device
+//        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//
+//        if (!wifiManager.isWifiEnabled()) {
+//            Toast.makeText(this, "WiFi is disabled ... We need to enable it", Toast.LENGTH_LONG).show();
+//            wifiManager.setWifiEnabled(true);
+//        }
+
 
         settings = getApplicationContext().getSharedPreferences(SETTINGS_NAME, 0);
 
@@ -108,16 +115,20 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         userOptions.getSelectedSSIDs().add("PB11WF6");
         userOptions.getSelectedSSIDs().add("PB11WF7");
 
+
+
         Intent intent = new Intent(this, WifiService.class);
         intent.putExtra("UserOptions", userOptions);
 
         startService(intent);
         bindService(intent, this, Context.BIND_AUTO_CREATE);
-
     }
 
     private void updateData(){
-        curSSID = wifiService.getWifiSSID(this);
+
+        wifiService.saveUserOptions(userOptions);
+
+        curSSID = wifiService.getCurSSID();
         registeredSSIDList = wifiService.getRegisteredSSIDList();
         wifiArrayList = wifiService.getWifiArrayList();
 
@@ -127,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         listView.setAdapter(scanAdapter);
 
     }
+
+
 
 
     @Override

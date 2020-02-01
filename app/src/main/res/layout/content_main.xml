@@ -19,7 +19,6 @@
         android:text="PB11WF0"
         android:textAlignment="center"
         android:textColor="@color/colorPrimary"
-        android:textFontWeight="bold"
         android:textSize="25sp" />
 
     <ListView

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -12,18 +13,25 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 import android.net.wifi.ScanResult;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public class WifiService extends Service {
     private static String TAG = "WifiSelector";
     private IBinder mBinder = new ServiceBinder();
+
+    public static final String SETTINGS_NAME = "wifi_prefs";
+    public static final String OPTION_SSIDS = "opt_ssids";
+    public static final String OPTION_BACKGRND = "opt_backgrnd";
+    public static final String OPTION_INTERVAL = "opt_interval";
+    public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
+
+    private SharedPreferences settings;
 
     private WifiManager wifiManager;
     private String curSSID;
@@ -48,7 +56,16 @@ public class WifiService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "in onStartCommand");
 
-        userOptions =  (UserOptions) intent.getSerializableExtra("UserOptions");
+
+        settings = getApplicationContext().getSharedPreferences(SETTINGS_NAME, 0);
+
+        if (intent != null && intent.getSerializableExtra("UserOptions") != null) {
+            userOptions = (UserOptions) intent.getSerializableExtra("UserOptions");
+        }
+        else{
+            userOptions = loadUserOptions();
+        }
+
 //        Log.d(TAG, "user option alarmInterval=" + userOptions.getAlarmInterval());
 
 
@@ -76,6 +93,7 @@ public class WifiService extends Service {
     private void scanWifi() {
         Log.d(MainActivity.TAG, "scanWifi!");
 
+        curSSID = getWifiSSID(getApplicationContext());
         getRegisteredSSIDs();
 
         wifiArrayList.clear();
@@ -118,12 +136,12 @@ public class WifiService extends Service {
             }
             Collections.sort(wifiArrayList);
 
-//             if (userOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
-//                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
-//            }
+             if (userOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
+                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
+            }
 
             sendBroadcast(new Intent(MainActivity.ACTION_DATA_REFRESH));
-        };
+        }
     };
 
 //    public  String getWifiSSID(Context context) {
@@ -135,27 +153,24 @@ public class WifiService extends Service {
 //        return "??";
 //    }
 
-    public  String getWifiSSID(Context context) {
-Log.d(TAG, "Requesting " );
+    public static String getWifiSSID(Context context) {
         if (context == null) {
             return "";
         }
-        final Intent intent = context.registerReceiver(null, new IntentFilter(WifiManager.NETWORK_IDS_CHANGED_ACTION));
+        final Intent intent = context.registerReceiver(null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
         if (intent != null) {
             final WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
             if (wifiInfo != null) {
                 final String ssid = wifiInfo.getSSID().replaceAll("\"", "");
 //Log.d(TAG, "ssid=" + ssid);
                 if (ssid != null) {
-                    curSSID = ssid;
-Log.d(TAG, "Returning " + ssid);
                     return ssid;
                 }
             }
         }
-Log.d(TAG, "Returning empty" );
         return "";
     }
+
 
     private void connectToWifiSSID(Context context, String ssid) {
 
@@ -187,6 +202,69 @@ Log.d(TAG, "Returning empty" );
         }
     }
 
+//    public static final String OPTION_BACKGRND = "opt_backgrnd";
+//    public static final String OPTION_INTERVAL = "opt_interval";
+//    public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
+
+    public void saveUserOptions(UserOptions userOptions){
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(OPTION_BACKGRND, userOptions.isRunInBackground());
+        editor.putInt(OPTION_INTERVAL, userOptions.getAlarmInterval());
+        editor.putBoolean(OPTION_AUTOCONNECT, userOptions.isAutoConnectToStrongest());
+
+        for (WifiEntry wifi : wifiArrayList){
+            if (wifi.isSelected()) {
+                userOptions.getSelectedSSIDs().add(wifi.getSsid());
+            }
+        }
+        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
+        editor.apply();
+    }
+
+    public UserOptions loadUserOptions(){
+        UserOptions userOptions = new UserOptions();
+        userOptions.setAlarmInterval(settings.getInt(OPTION_INTERVAL, 2));
+        userOptions.setAutoConnectToStrongest(settings.getBoolean(OPTION_AUTOCONNECT, true));
+        userOptions.setRunInBackground(settings.getBoolean(OPTION_BACKGRND, true));
+
+        HashSet<String> def = new HashSet<String>(); //default values: empty
+        HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);
+
+        userOptions.setSelectedSSIDs(ps);
+
+        return(userOptions);
+    }
+
+
+    public void saveSelectedSSIDs(UserOptions userOptions){
+        userOptions.getSelectedSSIDs().clear();
+        for (WifiEntry wifi : wifiArrayList){
+            if (wifi.isSelected()) {
+//Log.d(MainActivity.TAG, "Saving entry: " + wifi.getSsid() );
+                userOptions.getSelectedSSIDs().add(wifi.getSsid());
+            }
+        }
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
+        editor.apply();
+    }
+
+    public HashSet<String> loadSelectedSSIDs(){
+        HashSet<String> def = new HashSet<String>(); //default values: empty
+        HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);
+
+//        Iterator<String> i=ps.iterator();
+//        while(i.hasNext())        {
+//              Log.d(MainActivity.TAG, "Loading entry: " + i.next());
+//        }
+//
+        return (ps);
+    }
+
+    public String getCurSSID() {
+        return curSSID;
+    }
+
     public ArrayList<WifiEntry> getWifiArrayList() {
         return wifiArrayList;
     }
@@ -194,6 +272,7 @@ Log.d(TAG, "Returning empty" );
     public ArrayList<String> getRegisteredSSIDList() {
         return registeredSSIDList;
     }
+
 
     @Nullable
     @Override
