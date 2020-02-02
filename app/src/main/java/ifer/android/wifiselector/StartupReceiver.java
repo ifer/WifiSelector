@@ -19,7 +19,7 @@ public class StartupReceiver extends BroadcastReceiver {
 //        userOptions.getSelectedSSIDs().add("PB11WF6");
 //        userOptions.getSelectedSSIDs().add("PB11WF7");
 
-        Log.d(TAG, "TRYING TO START WifiService..");
+//        Log.d(TAG, "TRYING TO START WifiService..");
         Intent service = new Intent(context, WifiService.class);
 //        service.putExtra("UserOptions", userOptions);
         context.startService(service);

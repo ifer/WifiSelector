@@ -25,11 +25,11 @@ public class WifiService extends Service {
     private static String TAG = "WifiSelector";
     private IBinder mBinder = new ServiceBinder();
 
-    public static final String SETTINGS_NAME = "wifi_prefs";
-    public static final String OPTION_SSIDS = "opt_ssids";
-    public static final String OPTION_BACKGRND = "opt_backgrnd";
-    public static final String OPTION_INTERVAL = "opt_interval";
-    public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
+//    public static final String SETTINGS_NAME = "wifi_prefs";
+//    public static final String OPTION_SSIDS = "opt_ssids";
+//    public static final String OPTION_BACKGRND = "opt_backgrnd";
+//    public static final String OPTION_INTERVAL = "opt_interval";
+//    public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
 
     private SharedPreferences settings;
 
@@ -39,8 +39,7 @@ public class WifiService extends Service {
     private ArrayList<WifiEntry> wifiArrayList = new ArrayList<WifiEntry>();
     private ArrayList<String> registeredSSIDList = new ArrayList<String>();
     private UserOptions userOptions;
-
-    Handler handler = new Handler();
+    private Handler handler = new Handler();
 
 
     @Override
@@ -57,13 +56,13 @@ public class WifiService extends Service {
         Log.d(TAG, "in onStartCommand");
 
 
-        settings = getApplicationContext().getSharedPreferences(SETTINGS_NAME, 0);
+        settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
 
         if (intent != null && intent.getSerializableExtra("UserOptions") != null) {
             userOptions = (UserOptions) intent.getSerializableExtra("UserOptions");
         }
         else{
-            userOptions = loadUserOptions();
+            userOptions = UserOptionsHelper.loadUserOptions();
         }
 
 //        Log.d(TAG, "user option alarmInterval=" + userOptions.getAlarmInterval());
@@ -206,60 +205,37 @@ public class WifiService extends Service {
 //    public static final String OPTION_INTERVAL = "opt_interval";
 //    public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
 
-    public void saveUserOptions(UserOptions userOptions){
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean(OPTION_BACKGRND, userOptions.isRunInBackground());
-        editor.putInt(OPTION_INTERVAL, userOptions.getAlarmInterval());
-        editor.putBoolean(OPTION_AUTOCONNECT, userOptions.isAutoConnectToStrongest());
-
-        for (WifiEntry wifi : wifiArrayList){
-            if (wifi.isSelected()) {
-                userOptions.getSelectedSSIDs().add(wifi.getSsid());
-            }
-        }
-        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
-        editor.apply();
-    }
-
-    public UserOptions loadUserOptions(){
-        UserOptions userOptions = new UserOptions();
-        userOptions.setAlarmInterval(settings.getInt(OPTION_INTERVAL, 2));
-        userOptions.setAutoConnectToStrongest(settings.getBoolean(OPTION_AUTOCONNECT, true));
-        userOptions.setRunInBackground(settings.getBoolean(OPTION_BACKGRND, true));
-
-        HashSet<String> def = new HashSet<String>(); //default values: empty
-        HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);
-
-        userOptions.setSelectedSSIDs(ps);
-
-        return(userOptions);
-    }
-
-
-    public void saveSelectedSSIDs(UserOptions userOptions){
-        userOptions.getSelectedSSIDs().clear();
-        for (WifiEntry wifi : wifiArrayList){
-            if (wifi.isSelected()) {
-//Log.d(MainActivity.TAG, "Saving entry: " + wifi.getSsid() );
-                userOptions.getSelectedSSIDs().add(wifi.getSsid());
-            }
-        }
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
-        editor.apply();
-    }
-
-    public HashSet<String> loadSelectedSSIDs(){
-        HashSet<String> def = new HashSet<String>(); //default values: empty
-        HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);
-
-//        Iterator<String> i=ps.iterator();
-//        while(i.hasNext())        {
-//              Log.d(MainActivity.TAG, "Loading entry: " + i.next());
-//        }
+//    public void saveUserOptions(UserOptions userOptions){
+//        SharedPreferences.Editor editor = settings.edit();
+//        editor.putBoolean(OPTION_BACKGRND, userOptions.isRunInBackground());
+//        editor.putInt(OPTION_INTERVAL, userOptions.getAlarmInterval());
+//        editor.putBoolean(OPTION_AUTOCONNECT, userOptions.isAutoConnectToStrongest());
 //
-        return (ps);
-    }
+//        for (WifiEntry wifi : wifiArrayList){
+//            if (wifi.isSelected()) {
+//                userOptions.getSelectedSSIDs().add(wifi.getSsid());
+//            }
+//        }
+//        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
+//        editor.apply();
+//    }
+//
+//    public UserOptions loadUserOptions(){
+//        UserOptions userOptions = new UserOptions();
+//        userOptions.setAlarmInterval(settings.getInt(OPTION_INTERVAL, 2));
+//        userOptions.setAutoConnectToStrongest(settings.getBoolean(OPTION_AUTOCONNECT, true));
+//        userOptions.setRunInBackground(settings.getBoolean(OPTION_BACKGRND, true));
+//
+//        HashSet<String> def = new HashSet<String>(); //default values: empty
+//        HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);
+//
+//        userOptions.setSelectedSSIDs(ps);
+//
+//        return(userOptions);
+//    }
+
+
+
 
     public String getCurSSID() {
         return curSSID;

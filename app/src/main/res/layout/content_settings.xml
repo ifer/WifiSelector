@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:showIn="@layout/activity_settings">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:paddingLeft="@dimen/form_horizontal_padding"
+        android:paddingRight="@dimen/form_horizontal_padding"
+        >
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:layout_marginLeft="@dimen/form_horizontal_margin"
+            android:gravity="left"
+            android:text="@string/option_backgrnd"
+            />
+
+        <CheckBox android:id="@+id/checkbox_backgrnd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:onClick="onCheckboxClicked"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:weightSum="1"
+        android:paddingLeft="@dimen/form_horizontal_padding"
+        android:paddingRight="@dimen/form_horizontal_padding">
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:layout_marginLeft="@dimen/form_horizontal_margin"
+            android:gravity="left"
+            android:text="@string/option_interval"
+            />
+
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:orientation="vertical">
+            <RadioButton android:id="@+id/intv_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:onClick="onRadioButtonClicked"/>
+            <RadioButton android:id="@+id/intv_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2"
+                android:onClick="onRadioButtonClicked"/>
+            <RadioButton android:id="@+id/intv_five"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5"
+                android:onClick="onRadioButtonClicked"/>
+            <RadioButton android:id="@+id/intv_fifteen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15"
+                android:onClick="onRadioButtonClicked"/>
+            <RadioButton android:id="@+id/intv_thirty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="30"
+                android:onClick="onRadioButtonClicked"/>
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:weightSum="1"
+        android:paddingLeft="@dimen/form_horizontal_padding"
+        android:paddingRight="@dimen/form_horizontal_padding">
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:layout_marginLeft="@dimen/form_horizontal_margin"
+            android:gravity="left"
+            android:text="@string/option_autoconnect"
+            />
+
+        <CheckBox android:id="@+id/checkbox_autoconnect"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:onClick="onCheckboxClicked"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

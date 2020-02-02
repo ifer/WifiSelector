@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     public static final String ACTION_DATA_REFRESH = "DataRefresh";
 
-    public static final String SETTINGS_NAME = "wifi_prefs";
     public static final String PREF_SSIDS = "sel_ssids";
     public static final String TAG="WifiSelector";
 
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 //        }
 
 
-        settings = getApplicationContext().getSharedPreferences(SETTINGS_NAME, 0);
+        settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
 
 
         tvCurSSID = findViewById(R.id.curSSID);
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void updateData(){
 
-        wifiService.saveUserOptions(userOptions);
+//        UserOptionsHelper.saveUserOptions(userOptions, wifiArrayList);
 
         curSSID = wifiService.getCurSSID();
         registeredSSIDList = wifiService.getRegisteredSSIDList();
@@ -185,6 +184,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
