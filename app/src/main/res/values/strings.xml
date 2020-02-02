@@ -14,5 +14,17 @@
     </string-array>
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
+    <string name="warn_not_saved">A setting has changed. Are you sure you want to cancel the change?</string>
+
+    <string name="popup_ok">ΟΚ</string>
+    <string name="popup_cancel">Άκυρο</string>
+    <string name="popup_accept">Αποδοχή</string>
+    <string name="popup_decline">Άρνηση</string>
+    <string name="popup_yes">Ναι</string>
+    <string name="popup_no">Όχι</string>
+    <string name="popup_title_warning">ΠΡΟΣΟΧΗ!</string>
+    <string name="popup_title_info">Ειδοποίηση</string>
+    <string name="popup_title_question">Ερώτηση</string>
+    <string name="popup_title_error">ΣΦΑΛΜΑ</string>
 
 </resources>

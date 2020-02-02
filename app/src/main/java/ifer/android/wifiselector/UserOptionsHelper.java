@@ -26,12 +26,15 @@ public class UserOptionsHelper {
         editor.putInt(OPTION_INTERVAL, userOptions.getAlarmInterval());
         editor.putBoolean(OPTION_AUTOCONNECT, userOptions.isAutoConnectToStrongest());
 
-        for (WifiEntry wifi : wifiArrayList){
-            if (wifi.isSelected()) {
-                userOptions.getSelectedSSIDs().add(wifi.getSsid());
+        if (wifiArrayList != null) {
+            for (WifiEntry wifi : wifiArrayList) {
+                if (wifi.isSelected()) {
+                    userOptions.getSelectedSSIDs().add(wifi.getSsid());
+                }
             }
+            editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
         }
-        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
+
         editor.apply();
     }
 

@@ -1,14 +1,18 @@
 package ifer.android.wifiselector;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
+
+import static ifer.android.wifiselector.AndroidUtils.*;
 
 public class SettingsActivity extends AppCompatActivity {
     private  UserOptions userOptions;
@@ -21,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
     private RadioButton radFifteen  ;
     private RadioButton radThirty   ;
 
+    private boolean settingsChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +98,8 @@ public class SettingsActivity extends AppCompatActivity {
                     userOptions.setAlarmInterval(30);
                 break;
         }
+
+        settingsChanged = true;
     }
 
     public void onCheckboxClicked(View view) {
@@ -115,6 +122,43 @@ public class SettingsActivity extends AppCompatActivity {
                 break;
 
         }
+        settingsChanged = true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.action_settings_save:
+                UserOptionsHelper.saveUserOptions(userOptions, null);
+                finish();
+                return true;
+
+            case R.id.action_settings_cancel:
+                cancelEdit ();
+                return true;
+
+            case android.R.id.home:    //make toolbar home button behave like cancel
+                cancelEdit();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    private void cancelEdit (){
+
+        if (settingsChanged){
+            showPopup(this, Popup.WARNING, getString(R.string.warn_not_saved),  new CancelPosAction(), new CancelNegAction());
+        }
+        else {                                          //Data not changed
+            finish();
+        }
     }
 
     @Override
@@ -122,6 +166,19 @@ public class SettingsActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.settings, menu);
         return true;
+    }
+
+    class CancelPosAction implements DialogInterface.OnClickListener {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            finish();
+        }
+    }
+
+    class CancelNegAction implements DialogInterface.OnClickListener {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+        }
     }
 
 }
