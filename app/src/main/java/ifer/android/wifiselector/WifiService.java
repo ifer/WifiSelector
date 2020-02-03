@@ -70,8 +70,8 @@ public class WifiService extends Service {
 
         mainWork();
 
-        // If we get killed, after returning from here, restart
-        return START_STICKY;
+        // If we get killed, after returning from here, restart with the last intent that was delivered to the service
+        return START_REDELIVER_INTENT;
     }
 
 
@@ -201,38 +201,6 @@ public class WifiService extends Service {
         }
     }
 
-//    public static final String OPTION_BACKGRND = "opt_backgrnd";
-//    public static final String OPTION_INTERVAL = "opt_interval";
-//    public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
-
-//    public void saveUserOptions(UserOptions userOptions){
-//        SharedPreferences.Editor editor = settings.edit();
-//        editor.putBoolean(OPTION_BACKGRND, userOptions.isRunInBackground());
-//        editor.putInt(OPTION_INTERVAL, userOptions.getAlarmInterval());
-//        editor.putBoolean(OPTION_AUTOCONNECT, userOptions.isAutoConnectToStrongest());
-//
-//        for (WifiEntry wifi : wifiArrayList){
-//            if (wifi.isSelected()) {
-//                userOptions.getSelectedSSIDs().add(wifi.getSsid());
-//            }
-//        }
-//        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
-//        editor.apply();
-//    }
-//
-//    public UserOptions loadUserOptions(){
-//        UserOptions userOptions = new UserOptions();
-//        userOptions.setAlarmInterval(settings.getInt(OPTION_INTERVAL, 2));
-//        userOptions.setAutoConnectToStrongest(settings.getBoolean(OPTION_AUTOCONNECT, true));
-//        userOptions.setRunInBackground(settings.getBoolean(OPTION_BACKGRND, true));
-//
-//        HashSet<String> def = new HashSet<String>(); //default values: empty
-//        HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);
-//
-//        userOptions.setSelectedSSIDs(ps);
-//
-//        return(userOptions);
-//    }
 
 
 

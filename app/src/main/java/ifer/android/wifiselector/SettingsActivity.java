@@ -1,6 +1,7 @@
 package ifer.android.wifiselector;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,6 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
     private RadioButton radThirty   ;
 
     private boolean settingsChanged = false;
+
+    private boolean oldRunInBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,8 @@ public class SettingsActivity extends AppCompatActivity {
             case 30: radThirty.setChecked(true);
                 break;
         }
+
+        oldRunInBackground = userOptions.isRunInBackground(); //keep initial value
     }
 
     public void onRadioButtonClicked(View view) {
@@ -134,6 +139,16 @@ public class SettingsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_settings_save:
                 UserOptionsHelper.saveUserOptions(userOptions, null);
+
+                //Notify main activity if runInBackground has chenged
+                boolean runInBackgroundChanged = false;
+                if (userOptions.isRunInBackground() != oldRunInBackground){
+                    runInBackgroundChanged = true;
+                }
+                Intent output = new Intent();
+                output.putExtra("runInBackgroundChanged", runInBackgroundChanged);
+                setResult(RESULT_OK, output);
+
                 finish();
                 return true;
 

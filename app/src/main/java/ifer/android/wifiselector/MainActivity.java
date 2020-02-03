@@ -34,6 +34,7 @@ import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
+    private static final int SETTINGS_REQUEST = 101;
 
     public static final String ACTION_DATA_REFRESH = "DataRefresh";
 
@@ -61,9 +62,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private UserOptions userOptions = new UserOptions();
 
     private WifiService wifiService;
-    private UpdateReceiver updateReceiver;
+    public UpdateReceiver updateReceiver;
 //    private BoundService mBoundService;
     private boolean serviceBound = false;
+    private boolean serviceStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             System.exit(1);
         }
 
+        userOptions = UserOptionsHelper.loadUserOptions();
+
         //TODO
         //to remove later
         userOptions.getSelectedSSIDs().add("PB11WF5");
@@ -119,8 +123,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         Intent intent = new Intent(this, WifiService.class);
         intent.putExtra("UserOptions", userOptions);
 
-        startService(intent);
+        if (userOptions.isRunInBackground()) {
+            startService(intent);
+            serviceStarted = true;
+        }
+
         bindService(intent, this, Context.BIND_AUTO_CREATE);
+        serviceBound = true;
     }
 
     private void updateData(){
@@ -144,7 +153,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onStop() {
         super.onStop();
-        if (serviceBound && (! userOptions.isRunInBackground())) {
+//        if (serviceBound && (! userOptions.isRunInBackground())) {
+        if (serviceBound ) {
             unbindService(this);
             serviceBound = false;
         }
@@ -156,7 +166,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         if (updateReceiver == null) {
             updateReceiver = new UpdateReceiver();
         }
-        IntentFilter intentFilter = new IntentFilter(ACTION_DATA_REFRESH);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_DATA_REFRESH);
         registerReceiver(updateReceiver, intentFilter);
     }
 
@@ -185,11 +197,32 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, SETTINGS_REQUEST);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        boolean runInBackgroundChanged = false;
+        if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK && data != null) {
+            userOptions = UserOptionsHelper.loadUserOptions();
+            runInBackgroundChanged = data.getBooleanExtra("runInBackgroundChanged", false);
+        }
+        if (runInBackgroundChanged){
+            if (userOptions.isRunInBackground()){
+                Log.d(TAG, "Changed to background");
+                Intent intent = new Intent(this, WifiService.class);
+                intent.putExtra("UserOptions", userOptions);
+                startService(intent);
+                serviceStarted = true;
+            }
+            else {
+                Log.d(TAG, "Changed to NOT background");
+            }
+        }
     }
 
     @Override
@@ -206,15 +239,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         wifiService = null;
     }
 
-    private class UpdateReceiver extends BroadcastReceiver {
+    public class UpdateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_DATA_REFRESH)) {
                 updateData();
             }
+
         }
     }
-
 
 
     private void requestPermissionForLocation() {
