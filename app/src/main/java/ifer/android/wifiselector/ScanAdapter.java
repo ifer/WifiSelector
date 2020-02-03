@@ -1,6 +1,7 @@
 package ifer.android.wifiselector;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -109,6 +110,8 @@ public class ScanAdapter extends BaseAdapter {
 
                 if (wifiArrayList.get(pos).isSelected()) {
                     wifiArrayList.get(pos).setSelected(false);
+                    notifyMainActivity(wifiArrayList.get(pos), -1);
+
                 } else {
                     if ( !registeredSSIDList.contains(wifiArrayList.get(pos).getSsid())){
                         Toast.makeText(context, context.getResources().getString(R.string.error_unregistered_ssid), Toast.LENGTH_LONG).show();
@@ -116,12 +119,27 @@ public class ScanAdapter extends BaseAdapter {
                         return;
                     }
                     wifiArrayList.get(pos).setSelected(true);
+                    notifyMainActivity(wifiArrayList.get(pos), 1);
                 }
 
             }
         });
 
         return convertView;
+    }
+
+    private void notifyMainActivity(WifiEntry wfe, int action){
+        Context context = GlobalApplication.getAppContext();
+        Intent intent = new Intent(MainActivity.ACTION_WIFI_SELECTION_CHANGED);
+        intent.putExtra("SSID",wfe.getSsid());
+
+        if (action == 1) { //added
+            intent.putExtra("ACTION","add");
+        }
+        else {            //removed
+            intent.putExtra("ACTION","removed");
+        }
+        context.sendBroadcast(intent);
     }
 
     private class ViewHolder {

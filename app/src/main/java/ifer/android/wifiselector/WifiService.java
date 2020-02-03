@@ -40,35 +40,41 @@ public class WifiService extends Service {
     private ArrayList<String> registeredSSIDList = new ArrayList<String>();
     private UserOptions userOptions;
     private Handler handler = new Handler();
+    private Runnable periodicUpdate;
 
+    private boolean boundOnly = true;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "in onCreate");
+Log.d(TAG, "service onCreate");
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
+        settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "in onStartCommand");
+Log.d(TAG, "service onStartCommand");
+
+        boundOnly = false;
 
 
-        settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
 
-        if (intent != null && intent.getSerializableExtra("UserOptions") != null) {
-            userOptions = (UserOptions) intent.getSerializableExtra("UserOptions");
+        if (! boundOnly){
+            if (intent != null && intent.getSerializableExtra("UserOptions") != null) {
+                userOptions = (UserOptions) intent.getSerializableExtra("UserOptions");
+            }
+            else{
+                userOptions = UserOptionsHelper.loadUserOptions();
+            }
+
+            mainWork();
+
         }
-        else{
-            userOptions = UserOptionsHelper.loadUserOptions();
-        }
-
-//        Log.d(TAG, "user option alarmInterval=" + userOptions.getAlarmInterval());
-
-
-        mainWork();
+//        settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
+//
 
         // If we get killed, after returning from here, restart with the last intent that was delivered to the service
         return START_REDELIVER_INTENT;
@@ -78,7 +84,13 @@ public class WifiService extends Service {
     private void mainWork (){
         scanWifi();
 
-        Runnable periodicUpdate = new Runnable() {
+
+        if (periodicUpdate != null) {
+            handler.removeCallbacks(periodicUpdate);
+        }
+
+
+        periodicUpdate = new Runnable() {
             public void run() {
                 scanWifi();
                 handler.postDelayed(this, 1000 * 60 * userOptions.getAlarmInterval());
@@ -90,7 +102,7 @@ public class WifiService extends Service {
 
 
     private void scanWifi() {
-        Log.d(MainActivity.TAG, "scanWifi!");
+Log.d(MainActivity.TAG, "scanWifi!");
 
         curSSID = getWifiSSID(getApplicationContext());
         getRegisteredSSIDs();
@@ -221,7 +233,19 @@ public class WifiService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "Service bound");
+Log.d(TAG, "service onBind");
+
+        if ( boundOnly){
+            if (intent != null && intent.getSerializableExtra("UserOptions") != null) {
+                userOptions = (UserOptions) intent.getSerializableExtra("UserOptions");
+            }
+            else{
+                userOptions = UserOptionsHelper.loadUserOptions();
+            }
+
+            mainWork();
+
+        }
 
         return mBinder;
     }
@@ -235,19 +259,29 @@ public class WifiService extends Service {
 
     @Override
     public void onRebind(Intent intent) {
-        Log.d(TAG, "in onRebind");
+Log.d(TAG, "service onRebind");
         super.onRebind(intent);
     }
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "in onUnbind");
+Log.d(TAG, "service onUnbind");
+        if (boundOnly) {
+Log.d(TAG, "Stopping periodicUpdate") ;
+            handler.removeCallbacks(periodicUpdate);
+        }
         return true;
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "in onDestroy");
-//        mChronometer.stop();
+Log.d(TAG, "service onDestroy");
+        if (! boundOnly) {
+Log.d(TAG, "Stopping periodicUpdate") ;
+            handler.removeCallbacks(periodicUpdate);
+            boundOnly = false;
+        }
+
     }
 
 

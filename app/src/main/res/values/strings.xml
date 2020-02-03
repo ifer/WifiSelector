@@ -15,16 +15,17 @@
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
     <string name="warn_not_saved">A setting has changed. Are you sure you want to cancel the change?</string>
+    <string name="warn_app_will_restart">Because you changed its run mode setting, the application needs to restart. Press OK</string>
 
-    <string name="popup_ok">ΟΚ</string>
-    <string name="popup_cancel">Άκυρο</string>
-    <string name="popup_accept">Αποδοχή</string>
-    <string name="popup_decline">Άρνηση</string>
-    <string name="popup_yes">Ναι</string>
-    <string name="popup_no">Όχι</string>
-    <string name="popup_title_warning">ΠΡΟΣΟΧΗ!</string>
-    <string name="popup_title_info">Ειδοποίηση</string>
-    <string name="popup_title_question">Ερώτηση</string>
-    <string name="popup_title_error">ΣΦΑΛΜΑ</string>
+    <string name="popup_ok">OK</string>
+    <string name="popup_cancel">Cancel</string>
+    <string name="popup_accept">Accept</string>
+    <string name="popup_decline">Deny</string>
+    <string name="popup_yes">Yes</string>
+    <string name="popup_no">No</string>
+    <string name="popup_title_warning">WARNING!</string>
+    <string name="popup_title_info">Notification</string>
+    <string name="popup_title_question">Question</string>
+    <string name="popup_title_error">ERROR</string>
 
 </resources>
