@@ -32,9 +32,9 @@ public class UserOptionsHelper {
                     userOptions.getSelectedSSIDs().add(wifi.getSsid());
                 }
             }
-            editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
+//            editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
         }
-
+        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
         editor.apply();
     }
 
