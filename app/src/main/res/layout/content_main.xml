@@ -19,7 +19,8 @@
         android:text="Please wait.."
         android:textAlignment="center"
         android:textColor="@color/colorBlue"
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        android:textStyle="bold" />
 
     <ListView
         android:id="@+id/wifiList"

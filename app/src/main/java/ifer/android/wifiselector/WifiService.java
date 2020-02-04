@@ -18,11 +18,13 @@ import android.net.wifi.ScanResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 public class WifiService extends Service {
     private static String TAG = "WifiSelector";
+
+    private final int SIGNAL_LEVEL_THRESHOLD = 10;
+
     private IBinder mBinder = new ServiceBinder();
 
 //    public static final String SETTINGS_NAME = "wifi_prefs";
@@ -43,6 +45,9 @@ public class WifiService extends Service {
     private Runnable periodicUpdate;
 
     private boolean boundOnly = true;
+
+    private WifiEntry lastWifiConnected;
+
 
     @Override
     public void onCreate() {
@@ -116,8 +121,9 @@ Log.d(MainActivity.TAG, "scanWifi!");
             unregisterReceiver(this);
 
             for (ScanResult scanResult : results) {
-                int level = WifiManager.calculateSignalLevel(scanResult.level, 10);
-                int percentage = (int) ((level / 10.0) * 100);
+                int percentage = WifiManager.calculateSignalLevel(scanResult.level, 100);
+//Log.d(TAG, "scanResult.level=" + scanResult.level + ", level=" + level) ;
+//                int percentage = (int) ((level / 10.0) * 100);
 
                 WifiEntry wfe = new WifiEntry();
 
@@ -144,12 +150,34 @@ Log.d(MainActivity.TAG, "scanWifi!");
             Collections.sort(wifiArrayList);
 
              if (userOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
-                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
+                connectToWifiSSID(context,chooseWifiToConnect());
             }
 
             sendBroadcast(new Intent(MainActivity.ACTION_DATA_REFRESH));
         }
     };
+
+    private String chooseWifiToConnect(){
+        if (lastWifiConnected == null){
+            lastWifiConnected = wifiArrayList.get(0);
+            return (wifiArrayList.get(0).getSsid());
+        }
+
+        if (lastWifiConnected.getSsid().equals(wifiArrayList.get(0).getSsid())){
+            return (lastWifiConnected.getSsid());
+        }
+        else {
+            if ((wifiArrayList.get(0).getSignalPercentage() - lastWifiConnected.getSignalPercentage()) < SIGNAL_LEVEL_THRESHOLD){
+                return (lastWifiConnected.getSsid());
+            }
+            else {
+                return wifiArrayList.get(0).getSsid();
+            }
+        }
+
+
+
+    }
 
 
 

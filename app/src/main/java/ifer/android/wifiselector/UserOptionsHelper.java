@@ -22,19 +22,17 @@ public class UserOptionsHelper {
         settings = context.getSharedPreferences(SETTINGS_NAME, 0);
 
         SharedPreferences.Editor editor = settings.edit();
+
+        editor.clear();
+
         editor.putBoolean(OPTION_BACKGRND, userOptions.isRunInBackground());
         editor.putInt(OPTION_INTERVAL, userOptions.getAlarmInterval());
         editor.putBoolean(OPTION_AUTOCONNECT, userOptions.isAutoConnectToStrongest());
 
-        if (wifiArrayList != null) {
-            for (WifiEntry wifi : wifiArrayList) {
-                if (wifi.isSelected()) {
-                    userOptions.getSelectedSSIDs().add(wifi.getSsid());
-                }
-            }
-//            editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
-        }
-        editor.putStringSet(OPTION_SSIDS, userOptions.getSelectedSSIDs());
+        HashSet<String> selectedSSIDs = new HashSet<String>();
+        selectedSSIDs.addAll(userOptions.getSelectedSSIDs());
+        editor.putStringSet(OPTION_SSIDS, selectedSSIDs);
+
         editor.apply();
     }
 
