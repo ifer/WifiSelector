@@ -16,9 +16,9 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="PB11WF0"
+        android:text="Please wait.."
         android:textAlignment="center"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorBlue"
         android:textSize="25sp" />
 
     <ListView

@@ -16,6 +16,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="warn_not_saved">A setting has changed. Are you sure you want to cancel the change?</string>
     <string name="warn_app_will_restart">Because you changed its run mode setting, the application needs to restart. Press OK</string>
+    <string name="wifi_not_enabled">WiFi is not enabled at your phone. Please enable it and start the application again</string>
 
     <string name="popup_ok">OK</string>
     <string name="popup_cancel">Cancel</string>

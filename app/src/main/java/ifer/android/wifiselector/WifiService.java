@@ -47,7 +47,7 @@ public class WifiService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-Log.d(TAG, "service onCreate");
+//Log.d(TAG, "service onCreate");
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
@@ -56,10 +56,9 @@ Log.d(TAG, "service onCreate");
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-Log.d(TAG, "service onStartCommand");
+//Log.d(TAG, "service onStartCommand");
 
         boundOnly = false;
-
 
 
         if (! boundOnly){
@@ -71,10 +70,7 @@ Log.d(TAG, "service onStartCommand");
             }
 
             mainWork();
-
         }
-//        settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
-//
 
         // If we get killed, after returning from here, restart with the last intent that was delivered to the service
         return START_REDELIVER_INTENT;
@@ -101,7 +97,7 @@ Log.d(TAG, "service onStartCommand");
     }
 
 
-    private void scanWifi() {
+    public void scanWifi() {
 Log.d(MainActivity.TAG, "scanWifi!");
 
         curSSID = getWifiSSID(getApplicationContext());
@@ -155,14 +151,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
         }
     };
 
-//    public  String getWifiSSID(Context context) {
-//        final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
-//        if (connectionInfo != null && !TextUtils.isEmpty(connectionInfo.getSSID())) {
-//            String ssid = connectionInfo.getSSID();
-//            return ssid;
-//        }
-//        return "??";
-//    }
+
 
     public static String getWifiSSID(Context context) {
         if (context == null) {
@@ -189,6 +178,8 @@ Log.d(MainActivity.TAG, "scanWifi!");
             return;
         }
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        if (list == null)
+            return;
         for (WifiConfiguration i : list) {
 //            Log.d(MainActivity.TAG, "i.SSID=" + i.SSID + " ssid=" + ssid);
             if (i.SSID != null && i.SSID.equals("\"" + ssid + "\"")) {
@@ -206,6 +197,8 @@ Log.d(MainActivity.TAG, "scanWifi!");
     private void getRegisteredSSIDs (){
         registeredSSIDList.clear();
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        if (list == null)
+            return;
         for (WifiConfiguration i : list) {
             if (i.SSID != null ) {
                 registeredSSIDList.add(i.SSID.replaceAll("\"", ""));
@@ -233,7 +226,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-Log.d(TAG, "service onBind");
+//Log.d(TAG, "service onBind");
 
         if ( boundOnly){
             if (intent != null && intent.getSerializableExtra("UserOptions") != null) {
@@ -259,14 +252,14 @@ Log.d(TAG, "service onBind");
 
     @Override
     public void onRebind(Intent intent) {
-Log.d(TAG, "service onRebind");
+//Log.d(TAG, "service onRebind");
         super.onRebind(intent);
     }
     @Override
     public boolean onUnbind(Intent intent) {
-Log.d(TAG, "service onUnbind");
+//Log.d(TAG, "service onUnbind");
         if (boundOnly) {
-Log.d(TAG, "Stopping periodicUpdate") ;
+//Log.d(TAG, "Stopping periodicUpdate") ;
             handler.removeCallbacks(periodicUpdate);
         }
         return true;
@@ -275,9 +268,9 @@ Log.d(TAG, "Stopping periodicUpdate") ;
     @Override
     public void onDestroy() {
         super.onDestroy();
-Log.d(TAG, "service onDestroy");
+//Log.d(TAG, "service onDestroy");
         if (! boundOnly) {
-Log.d(TAG, "Stopping periodicUpdate") ;
+//Log.d(TAG, "Stopping periodicUpdate") ;
             handler.removeCallbacks(periodicUpdate);
             boundOnly = false;
         }
