@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -14,13 +15,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.net.wifi.ScanResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WifiService extends Service {
+public class WifiServiceOld extends Service {
     private static String TAG = "WifiSelector";
 
 //    private final int SIGNAL_LEVEL_THRESHOLD = 10;
@@ -151,6 +151,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
              if (userOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
                 connectToWifiSSID(context,chooseWifiToConnect());
+//                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
             }
 
             sendBroadcast(new Intent(MainActivity.ACTION_DATA_REFRESH));
@@ -274,8 +275,8 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
 
     public class ServiceBinder extends Binder {
-        WifiService getService() {
-            return WifiService.this;
+        WifiServiceOld getService() {
+            return WifiServiceOld.this;
         }
     }
 

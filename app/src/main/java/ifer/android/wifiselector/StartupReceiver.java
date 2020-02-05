@@ -3,10 +3,6 @@ package ifer.android.wifiselector;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-
-import ifer.android.wifiselector.UserOptions;
-import ifer.android.wifiselector.WifiService;
 
 public class StartupReceiver extends BroadcastReceiver {
     private static String TAG = "WifiSelector";
@@ -19,8 +15,8 @@ public class StartupReceiver extends BroadcastReceiver {
 //        userOptions.getSelectedSSIDs().add("PB11WF6");
 //        userOptions.getSelectedSSIDs().add("PB11WF7");
 
-//        Log.d(TAG, "TRYING TO START WifiService..");
-        Intent service = new Intent(context, WifiService.class);
+//        Log.d(TAG, "TRYING TO START WifiBoundService..");
+        Intent service = new Intent(context, WifiBoundService.class);
 //        service.putExtra("UserOptions", userOptions);
         context.startService(service);
     }

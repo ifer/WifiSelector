@@ -2,7 +2,9 @@ package ifer.android.wifiselector;
 
 import android.support.annotation.NonNull;
 
-public class WifiEntry implements Comparable  {
+import java.io.Serializable;
+
+public class WifiEntry implements Comparable, Serializable {
     private String ssid;
     private String signalLevel;
     private String signalLabel;
