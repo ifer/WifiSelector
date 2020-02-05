@@ -7,6 +7,7 @@ public class UserOptions implements Serializable {
     private boolean runInBackground = true;
     private int alarmInterval = 1; //minutes
     private boolean autoConnectToStrongest = true;
+    private int minSwitchDiff = 10;
     private HashSet<String> selectedSSIDs = new HashSet<String>();
 
     public boolean isRunInBackground() {
@@ -31,6 +32,14 @@ public class UserOptions implements Serializable {
 
     public void setAutoConnectToStrongest(boolean autoConnectToStrongest) {
         this.autoConnectToStrongest = autoConnectToStrongest;
+    }
+
+    public int getMinSwitchDiff() {
+        return minSwitchDiff;
+    }
+
+    public void setMinSwitchDiff(int minSwitchDiff) {
+        this.minSwitchDiff = minSwitchDiff;
     }
 
     public HashSet<String> getSelectedSSIDs() {

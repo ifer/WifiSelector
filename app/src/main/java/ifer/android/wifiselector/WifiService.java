@@ -23,7 +23,7 @@ import java.util.List;
 public class WifiService extends Service {
     private static String TAG = "WifiSelector";
 
-    private final int SIGNAL_LEVEL_THRESHOLD = 10;
+//    private final int SIGNAL_LEVEL_THRESHOLD = 10;
 
     private IBinder mBinder = new ServiceBinder();
 
@@ -167,10 +167,11 @@ Log.d(MainActivity.TAG, "scanWifi!");
             return (lastWifiConnected.getSsid());
         }
         else {
-            if ((wifiArrayList.get(0).getSignalPercentage() - lastWifiConnected.getSignalPercentage()) < SIGNAL_LEVEL_THRESHOLD){
+            if ((wifiArrayList.get(0).getSignalPercentage() - lastWifiConnected.getSignalPercentage()) < userOptions.getMinSwitchDiff()){
                 return (lastWifiConnected.getSsid());
             }
             else {
+                lastWifiConnected = wifiArrayList.get(0);
                 return wifiArrayList.get(0).getSsid();
             }
         }

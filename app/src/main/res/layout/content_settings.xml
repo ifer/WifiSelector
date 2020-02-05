@@ -20,11 +20,11 @@
         <TextView
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
+            android:layout_weight="0.8"
             android:gravity="left"
             android:text="@string/option_backgrnd"
-            />
+            android:textSize="18sp" />
 
         <CheckBox android:id="@+id/checkbox_backgrnd"
             android:layout_width="0dp"
@@ -46,11 +46,11 @@
         <TextView
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
+            android:layout_weight="0.8"
             android:gravity="left"
             android:text="@string/option_interval"
-            />
+            android:textSize="18sp" />
 
         <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="0dip"
@@ -87,7 +87,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:orientation="horizontal"
         android:layout_marginTop="20dp"
         android:weightSum="1"
@@ -97,11 +97,11 @@
         <TextView
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
+            android:layout_weight="0.8"
             android:gravity="left"
             android:text="@string/option_autoconnect"
-            />
+            android:textSize="18sp" />
 
         <CheckBox android:id="@+id/checkbox_autoconnect"
             android:layout_width="0dip"
@@ -111,6 +111,33 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/form_horizontal_padding"
+        android:paddingRight="@dimen/form_horizontal_padding"
+        android:weightSum="1">
 
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/form_horizontal_margin"
+            android:layout_weight="0.8"
+            android:gravity="left"
+            android:scrollHorizontally="false"
+            android:singleLine="false"
+            android:text="@string/option_switch_min_diff"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/switch_diff"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:inputType="number" />
+
+    </LinearLayout>
 
 </LinearLayout>

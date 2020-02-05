@@ -13,6 +13,8 @@ public class UserOptionsHelper {
     public static final String OPTION_BACKGRND = "opt_backgrnd";
     public static final String OPTION_INTERVAL = "opt_interval";
     public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
+    public static final String OPTION_SWITCH_DIFF = "opt_switchdiff";
+
 
     private static SharedPreferences settings;
     private static Context context = GlobalApplication.getAppContext();
@@ -28,6 +30,7 @@ public class UserOptionsHelper {
         editor.putBoolean(OPTION_BACKGRND, userOptions.isRunInBackground());
         editor.putInt(OPTION_INTERVAL, userOptions.getAlarmInterval());
         editor.putBoolean(OPTION_AUTOCONNECT, userOptions.isAutoConnectToStrongest());
+        editor.putInt(OPTION_SWITCH_DIFF, userOptions.getMinSwitchDiff());
 
         HashSet<String> selectedSSIDs = new HashSet<String>();
         selectedSSIDs.addAll(userOptions.getSelectedSSIDs());
@@ -43,6 +46,7 @@ public class UserOptionsHelper {
         userOptions.setAlarmInterval(settings.getInt(OPTION_INTERVAL, 2));
         userOptions.setAutoConnectToStrongest(settings.getBoolean(OPTION_AUTOCONNECT, true));
         userOptions.setRunInBackground(settings.getBoolean(OPTION_BACKGRND, true));
+        userOptions.setMinSwitchDiff(settings.getInt(OPTION_SWITCH_DIFF, 10));
 
         HashSet<String> def = new HashSet<String>(); //default values: empty
         HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);

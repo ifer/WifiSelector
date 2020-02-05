@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.RadioButton;
 
 import static ifer.android.wifiselector.AndroidUtils.*;
@@ -25,10 +26,12 @@ public class SettingsActivity extends AppCompatActivity {
     private RadioButton radFive     ;
     private RadioButton radFifteen  ;
     private RadioButton radThirty   ;
+    private EditText etSwitchDiff   ;
 
     private boolean settingsChanged = false;
 
     private boolean oldRunInBackground;
+    private int oldSwitchDiff;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
         radFive        = findViewById(R.id.intv_five);
         radFifteen     = findViewById(R.id.intv_fifteen);
         radThirty      = findViewById(R.id.intv_thirty);
+        etSwitchDiff   = findViewById(R.id.switch_diff);
 
         loadUserOptions();
 
@@ -53,8 +57,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void loadUserOptions(){
         userOptions = UserOptionsHelper.loadUserOptions();
+
         chkBackgrnd.setChecked(userOptions.isRunInBackground());
         chkAutoconnect.setChecked(userOptions.isAutoConnectToStrongest());
+        etSwitchDiff.setText(String.valueOf(userOptions.getMinSwitchDiff()));
+
+
         int intv = userOptions.getAlarmInterval();
         switch (intv){
             case 1: radOne.setChecked(true);
@@ -74,6 +82,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         oldRunInBackground = userOptions.isRunInBackground(); //keep initial value
+        oldSwitchDiff = userOptions.getMinSwitchDiff();
     }
 
     public void onRadioButtonClicked(View view) {
@@ -130,6 +139,16 @@ public class SettingsActivity extends AppCompatActivity {
         settingsChanged = true;
     }
 
+    private boolean validateSwitchDiff (){
+//        if ()
+        Integer switchDiff = getIntegerFromTextView(etSwitchDiff);
+        if (switchDiff == null || switchDiff < 0 || switchDiff > 100){
+            showToastMessage(this, getString(R.string.error_switch_diff));
+            return (false);
+        }
+        return (true);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -138,6 +157,11 @@ public class SettingsActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (item.getItemId()) {
             case R.id.action_settings_save:
+                if (validateSwitchDiff() == false){
+                    return true;
+                }
+                userOptions.setMinSwitchDiff( getIntegerFromTextView(etSwitchDiff));
+
                 UserOptionsHelper.saveUserOptions(userOptions, null);
 
                 //Notify main activity if runInBackground has chenged
@@ -167,6 +191,9 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     private void cancelEdit (){
+        if (! getIntegerFromTextView(etSwitchDiff).equals(oldSwitchDiff))    {
+            settingsChanged = true;
+        }
 
         if (settingsChanged){
             showPopup(this, Popup.WARNING, getString(R.string.warn_not_saved),  new CancelPosAction(), new CancelNegAction());
