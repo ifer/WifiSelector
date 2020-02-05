@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean serviceBound = false;
     private boolean serviceStarted = false;
 
+    private boolean permissionGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,8 +176,10 @@ public class MainActivity extends AppCompatActivity {
 
     //Unbind WifiService
     private void unbindWifiService(){
-        unbindService(serviceConnection);
-        serviceBound = false;
+        if(serviceBound) {
+            unbindService(serviceConnection);
+            serviceBound = false;
+        }
     }
 
 
@@ -185,14 +188,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//Log.d(TAG, "activity onStart");
+Log.d(TAG, "activity onStart");
 
-        if (userOptions.isRunInBackground()) {
-            startWifiService();
+        if (permissionGranted) {
+            if (userOptions.isRunInBackground()) {
+                startWifiService();
+            }
+
+            bindWifiService();
         }
-
-        bindWifiService();
-
 
     }
 
@@ -202,17 +206,22 @@ public class MainActivity extends AppCompatActivity {
     // - From ScanAdapter that the list of selected WiFis is changed
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
-        if (updateReceiver == null) {
-            updateReceiver = new UpdateReceiver();
-        }
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ACTION_DATA_REFRESH);
-        intentFilter.addAction(ACTION_WIFI_SELECTION_CHANGED);
-        getApplicationContext().registerReceiver(updateReceiver, intentFilter);
+        if (permissionGranted) {
+            if (updateReceiver == null) {
+                updateReceiver = new UpdateReceiver();
+            }
+
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(ACTION_DATA_REFRESH);
+            intentFilter.addAction(ACTION_WIFI_SELECTION_CHANGED);
+            getApplicationContext().registerReceiver(updateReceiver, intentFilter);
+
+        }
     }
+
 
     // OnPause event: unregister the receiver
     @Override
@@ -367,6 +376,7 @@ public class MainActivity extends AppCompatActivity {
     private void requestPermissionForLocation() {
         int result = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (result == PackageManager.PERMISSION_GRANTED) {
+            permissionGranted = true;
             initApp(true);
             return;
         }
@@ -376,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
             //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
         } else {
             // Android version is lesser than 6.0 or the permission is already granted.
+            permissionGranted = true;
             initApp(true);
         }
     }
@@ -392,6 +403,10 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 // Permission is granted
+                permissionGranted = true;
+                onStart();
+                onResume();
+
                 initApp(true);
             } else {
                 Toast.makeText(this, getResources().getString(R.string.permdenied), Toast.LENGTH_LONG).show();

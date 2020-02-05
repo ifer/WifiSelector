@@ -124,6 +124,7 @@ public class AndroidUtils {
             alt_bld.setNegativeButton(context.getResources().getString(R.string.popup_no), negAction);
         }
 
+
         alt_bld.setMessage(message); // set the message
         android.support.v7.app.AlertDialog alert = alt_bld.create();
         alert.setTitle(title); // set the title
@@ -161,6 +162,10 @@ public class AndroidUtils {
         }
         try {
             alert.show();
+
+            TextView messageView = (TextView)alert.findViewById(android.R.id.message);
+            messageView.setGravity(Gravity.CENTER);
+
             alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.colorPrimary));
             alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.colorPrimaryDark));
         } catch (WindowManager.BadTokenException bt) {
