@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">WifiSelector</string>
     <string name="action_settings">Settings</string>
+    <string name="action_about">About..</string>
     <string name="permdenied">Permission denied!</string>
     <string name="error_unregistered_ssid">You must first register to this WiFi access point!</string>
     <string name="title_activity_settings">Settings</string>
@@ -19,6 +20,13 @@
     <string name="warn_app_will_restart">Because you changed its run mode setting, the application needs to restart. Press OK</string>
     <string name="wifi_not_enabled">WiFi is not enabled at your phone. Please enable it and start the application again</string>
     <string name="error_switch_diff">Minimum percentage difference must be an integer between 0 and 100</string>
+
+    <string name="app_about">Copywrite ifer 2020</string>
+    <string name="text_about">\nWifi Selector\n\n
+version @version@\n\n
+Copyright ifer 2020\n
+</string>
+    <string name="version_uknown">[Uknown]</string>
 
 
     <string name="popup_ok">OK</string>

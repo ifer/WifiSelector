@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String PREF_SSIDS = "sel_ssids";
     public static final String TAG="WifiSelector";
+    private final String VERSION_PATTERN = "@version@";
+
 
     private ListView listView;
     private Button buttonScan;
@@ -269,6 +271,10 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, SETTINGS_REQUEST);
             return true;
         }
+        else if (id == R.id.action_about) {
+            showAbout();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -336,6 +342,24 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = getIntent();
             finish();
         }
+    }
+
+    public void showAbout (){
+        String version = null;
+        try {
+            version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        }
+        catch (PackageManager.NameNotFoundException e){
+            Log.d(TAG, e.getLocalizedMessage());
+        }
+        if (version == null)
+            version = getResources().getString(R.string.version_uknown);
+
+        String text = getResources().getString(R.string.text_about);
+        text = text.replace(VERSION_PATTERN, version);
+
+//        AndroidUtils.showPopupInfo(this, text);
+        AndroidUtils.showPopup(this, AndroidUtils.Popup.INFO, getString(R.string.action_about), text, null, null);
     }
 
 
