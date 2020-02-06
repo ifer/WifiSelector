@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -85,9 +86,15 @@ Log.d(MainActivity.TAG, "scanWifi!");
             Collections.sort(wifiArrayList);
 
             if (UserOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
-                connectToWifiSSID(context,chooseWifiToConnect());
+                String chosenSSID = chooseWifiToConnect();
+
+                if (chosenSSID != null) // SSIDs selected
+                    connectToWifiSSID(context, chosenSSID);
+
 //                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
             }
+
+            curSSID = getWifiSSID(GlobalApplication.getAppContext());
 
             Intent updateIntent = new Intent();
             updateIntent.setAction(MainActivity.ACTION_DATA_REFRESH);
@@ -114,6 +121,10 @@ Log.d(MainActivity.TAG, "scanWifi!");
             break;
         }
 
+        // 1st time use: there are no selected wifis to connect
+        if (weChosen == null){
+            return null;
+        }
 
 
         if (lastWifiConnected == null ||
@@ -141,25 +152,37 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
     }
 
-
-
-    public static String getWifiSSID(Context context) {
-        if (context == null) {
-            return "";
-        }
-        final Intent intent = context.registerReceiver(null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
-        if (intent != null) {
-            final WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+    public String getWifiSSID(Context context) {
+        WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (manager.isWifiEnabled()) {
+            WifiInfo wifiInfo = manager.getConnectionInfo();
             if (wifiInfo != null) {
-                final String ssid = wifiInfo.getSSID().replaceAll("\"", "");
-//Log.d(TAG, "ssid=" + ssid);
-                if (ssid != null) {
-                    return ssid;
+                NetworkInfo.DetailedState state = WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState());
+                if (state == NetworkInfo.DetailedState.CONNECTED || state == NetworkInfo.DetailedState.OBTAINING_IPADDR) {
+                    return wifiInfo.getSSID().replaceAll("\"", "");
                 }
             }
         }
         return "";
     }
+
+//    public static String getWifiSSID(Context context) {
+//        if (context == null) {
+//            return "";
+//        }
+//        final Intent intent = context.registerReceiver(null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+//        if (intent != null) {
+//            final WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+//            if (wifiInfo != null) {
+//                final String ssid = wifiInfo.getSSID().replaceAll("\"", "");
+////Log.d(TAG, "ssid=" + ssid);
+//                if (ssid != null) {
+//                    return ssid;
+//                }
+//            }
+//        }
+//        return "";
+//    }
 
 
     private void connectToWifiSSID(Context context, String ssid) {
