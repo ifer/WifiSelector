@@ -39,7 +39,7 @@ import static ifer.android.wifiselector.AndroidUtils.showToastMessage;
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
     private static final int SETTINGS_REQUEST = 101;
-    private final int JOBID = 1;
+    public static final int JOBID = 1;
 
     public static final String ACTION_DATA_REFRESH = "DataRefresh";
     public static final String ACTION_WIFI_SELECTION_CHANGED = "wifi_selection_changed";
@@ -49,9 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private final String VERSION_PATTERN = "@version@";
 
 
+
     private ListView listView;
-    private Button buttonScan;
-    private Button buttonSave;
+//    private Button buttonScan;
+//    private Button buttonSave;
 
     private TextView tvCurSSID;
     private int size = 0;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences settings;
     private HashSet<String> selectedSSIDs;
 
-    private JobScheduler jobScheduler;
+    private static JobScheduler jobScheduler;
 
 
 //    private UserOptions userOptions = new UserOptions();
@@ -100,8 +101,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        jobScheduler = (JobScheduler)getApplicationContext().getSystemService(JOB_SCHEDULER_SERVICE);
-
+        jobScheduler = (JobScheduler) this.getSystemService(JOB_SCHEDULER_SERVICE);
 
         settings = getApplicationContext().getSharedPreferences(UserOptions.SETTINGS_NAME, 0);
 
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void onServiceDisconnected(ComponentName className) {
-//            Log.d(TAG, "Service disconnected");
+//Log.d(TAG, "Service disconnected");
             wifiBoundService = null;
         }
     };
@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
     //Update all data
     private void updateData(Intent intent){
 
+
         curSSID = (String) intent.getSerializableExtra("curSSID");
         registeredSSIDList = (ArrayList<String>)intent.getSerializableExtra("registeredSSIDList");
         wifiArrayList = (ArrayList<WifiEntry>)intent.getSerializableExtra("wifiArrayList");
@@ -255,11 +256,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Schedule the periodic job which runs when app is off
-    private void schedulePeriodicJob(){
-        ComponentName componentName = new ComponentName(this, WifiJobService.class);
-        long timePeriodMillis = UserOptions.getAlarmInterval() * 60 * 1000;
+    public static void schedulePeriodicJob(){
+//Log.d(TAG, "Scheduling for every " + UserOptions.getAlarmInterval() + " min");
+
+        Context appContext = GlobalApplication.getAppContext();
+
+        ComponentName componentName = new ComponentName(appContext, WifiJobService.class);
+        long timePeriodMillisMin = UserOptions.getAlarmInterval() * 50 * 1000;
+        long timePeriodMillisMax = UserOptions.getAlarmInterval() * 70 * 1000;
+
+        //.setPeriodic does not work for intervals < 15min and android >= Android N
         JobInfo jobinfo = new JobInfo.Builder(JOBID, componentName)
-                                    .setPeriodic(timePeriodMillis)
+//                                    .setPeriodic(timePeriodMillis)
+                                    .setMinimumLatency(timePeriodMillisMin)
+                                    .setOverrideDeadline(timePeriodMillisMax)
                                     .setPersisted(true)
                                     .build();
         jobScheduler.schedule(jobinfo);
@@ -305,16 +315,6 @@ public class MainActivity extends AppCompatActivity {
             UserOptions.load();
             runInBackgroundChanged = data.getBooleanExtra("runInBackgroundChanged", false);
         }
-//        if (runInBackgroundChanged){
-//            if (userOptions.isRunInBackground()){
-////                startWifiService();
-//            }
-//            else {
-////               stopWifiService();
-//            }
-//            showPopupInfo(this, getString(R.string.warn_app_will_restart),  new RestartPosAction());
-//
-//        }
     }
 
 

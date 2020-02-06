@@ -27,7 +27,7 @@ public class WifiBoundService extends Service {
     private List<ScanResult> results;
     private ArrayList<WifiEntry> wifiArrayList = new ArrayList<WifiEntry>();
     private ArrayList<String> registeredSSIDList = new ArrayList<String>();
-     private Handler handler = new Handler();
+    private Handler handler = new Handler();
     private Runnable periodicUpdate;
 
 //    private boolean boundOnly = true;
