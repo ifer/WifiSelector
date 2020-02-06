@@ -38,6 +38,7 @@ import static ifer.android.wifiselector.AndroidUtils.*;
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
     private static final int SETTINGS_REQUEST = 101;
+    private final int JOBID = 1;
 
     public static final String ACTION_DATA_REFRESH = "DataRefresh";
     public static final String ACTION_WIFI_SELECTION_CHANGED = "wifi_selection_changed";
@@ -60,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences settings;
     private HashSet<String> selectedSSIDs;
 
-    private UserOptions userOptions = new UserOptions();
+    private JobScheduler jobScheduler;
+
+
+//    private UserOptions userOptions = new UserOptions();
 
     private WifiBoundService wifiBoundService;
     public UpdateReceiver updateReceiver;
@@ -88,11 +92,15 @@ public class MainActivity extends AppCompatActivity {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
                 if (serviceBound == true && wifiBoundService != null){
+                    showToastMessage(getApplicationContext(), getString(R.string.scanWifiMessage));
                     wifiBoundService.scanWifi();
                 }
 
             }
         });
+
+        jobScheduler = (JobScheduler)getApplicationContext().getSystemService(JOB_SCHEDULER_SERVICE);
+
 
         settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
 
@@ -112,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
         }
 //Log.d(TAG, "activity initApp");
 
-        userOptions = UserOptionsHelper.loadUserOptions();
+//        userOptions = UserOptionsHelper.loadUserOptions();
+        UserOptions.load();
 
         //Check if wifi is enabled
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -140,36 +149,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            Log.d(TAG, "Service disconnected");
+//            Log.d(TAG, "Service disconnected");
             wifiBoundService = null;
         }
     };
 
 
-    // Start WifiBoundService as a permanent background service.
-    // This must happen before binding so that even if the app is terminated,
-    // the service continues working.
-//    private void startWifiService(){
-//        Intent intent = new Intent(this, WifiBoundService.class);
-//        intent.putExtra("UserOptions", userOptions);
-//        startService(intent);
-//        serviceStarted = true;
-//    }
-
-
-    // Stop WifiBoundService as a permanent background service.
-//    private void stopWifiService(){
-//        Intent intent = new Intent(this, WifiBoundService.class);
-//        stopService(intent);
-//        serviceStarted = false;
-//    }
 
     // Bind WifiBoundService so that the activity can communicate with it.
     // If the service is not started as a background service as well,
     // binding terminates along with the app, and the service stops working
     private void bindWifiBoundService(){
         Intent intent = new Intent(this, WifiBoundService.class);
-        intent.putExtra("UserOptions", userOptions);
+//        intent.putExtra("UserOptions", userOptions);
 
         bindService(intent, boundServiceConnection, Context.BIND_AUTO_CREATE);
         serviceBound = true;
@@ -186,19 +178,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // OnStart event: start service in the background if option isRunInBackground is true.
-    // Then bind the service.
+    // OnStart event: bind the bound service, and cancel scheduled job
     @Override
     protected void onStart() {
         super.onStart();
-Log.d(TAG, "activity onStart");
+//Log.d(TAG, "activity onStart");
 
         if (permissionGranted) {
-//            if (userOptions.isRunInBackground()) {
-//                startWifiService();
-//            }
-
             bindWifiBoundService();
+
+            jobScheduler.cancelAll();
         }
 
     }
@@ -211,7 +200,7 @@ Log.d(TAG, "activity onStart");
     @Override
     protected void onResume() {
         super.onResume();
-
+//Log.d(TAG, "activity onResume");
         if (permissionGranted) {
             if (updateReceiver == null) {
                 updateReceiver = new UpdateReceiver();
@@ -237,6 +226,7 @@ Log.d(TAG, "activity onStart");
     }
 
     // OnStop event: unbint the WifiBoundService
+    // and schedule the JobService
 
     @Override
     protected void onStop() {
@@ -245,7 +235,7 @@ Log.d(TAG, "activity onStart");
 
         unbindWifiBoundService();
 
-        if(userOptions.isRunInBackground()){
+        if(UserOptions.isRunInBackground()){
             schedulePeriodicJob();
         }
     }
@@ -264,11 +254,11 @@ Log.d(TAG, "activity onStart");
 
     }
 
+    //Schedule the periodic job which runs when app is off
     private void schedulePeriodicJob(){
-        JobScheduler jobScheduler = (JobScheduler)getApplicationContext().getSystemService(JOB_SCHEDULER_SERVICE);
         ComponentName componentName = new ComponentName(this, WifiJobService.class);
-        long timePeriodMillis = userOptions.getAlarmInterval() * 60 * 1000;
-        JobInfo jobinfo = new JobInfo.Builder(1, componentName)
+        long timePeriodMillis = UserOptions.getAlarmInterval() * 60 * 1000;
+        JobInfo jobinfo = new JobInfo.Builder(JOBID, componentName)
                                     .setPeriodic(timePeriodMillis)
                                     .setPersisted(true)
                                     .build();
@@ -312,19 +302,19 @@ Log.d(TAG, "activity onStart");
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean runInBackgroundChanged = false;
         if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK && data != null) {
-            userOptions = UserOptionsHelper.loadUserOptions();
+            UserOptionsHelper.loadUserOptions();
             runInBackgroundChanged = data.getBooleanExtra("runInBackgroundChanged", false);
         }
-        if (runInBackgroundChanged){
-            if (userOptions.isRunInBackground()){
-//                startWifiService();
-            }
-            else {
-//               stopWifiService();
-            }
-            showPopupInfo(this, getString(R.string.warn_app_will_restart),  new RestartPosAction());
-
-        }
+//        if (runInBackgroundChanged){
+//            if (userOptions.isRunInBackground()){
+////                startWifiService();
+//            }
+//            else {
+////               stopWifiService();
+//            }
+//            showPopupInfo(this, getString(R.string.warn_app_will_restart),  new RestartPosAction());
+//
+//        }
     }
 
 
@@ -341,13 +331,13 @@ Log.d(TAG, "Update data!");
                 String ssid = (String) intent.getSerializableExtra("SSID");
                 String action = (String) intent.getSerializableExtra("ACTION");
                 if (action.equals("add")){
-                    userOptions.getSelectedSSIDs().add(ssid);
+                    UserOptions.getSelectedSSIDs().add(ssid);
                 }
                 else {
-                    userOptions.getSelectedSSIDs().remove(ssid);
+                    UserOptions.getSelectedSSIDs().remove(ssid);
                 }
-                wifiBoundService.setUserOptions(userOptions);
-                UserOptionsHelper.saveUserOptions(userOptions, null);
+//                wifiBoundService.setUserOptions(userOptions);
+                UserOptions.save();
             }
 
         }

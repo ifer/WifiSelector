@@ -20,6 +20,8 @@
     <string name="warn_app_will_restart">Because you changed its run mode setting, the application needs to restart. Press OK</string>
     <string name="wifi_not_enabled">WiFi is not enabled at your phone. Please enable it and start the application again</string>
     <string name="error_switch_diff">Minimum percentage difference must be an integer between 0 and 100</string>
+    <string name="scanWifiMessage">Scanning wifi networks...</string>
+    <string name="noconnection">No wifi connection</string>
 
     <string name="app_about">Copywrite ifer 2020</string>
     <string name="text_about">\nWifi Selector\n\n

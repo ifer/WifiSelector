@@ -29,8 +29,7 @@ public class WifiBoundService extends Service {
     private List<ScanResult> results;
     private ArrayList<WifiEntry> wifiArrayList = new ArrayList<WifiEntry>();
     private ArrayList<String> registeredSSIDList = new ArrayList<String>();
-    private UserOptions userOptions;
-    private Handler handler = new Handler();
+     private Handler handler = new Handler();
     private Runnable periodicUpdate;
 
 //    private boolean boundOnly = true;
@@ -66,13 +65,14 @@ public class WifiBoundService extends Service {
 
         periodicUpdate = new Runnable() {
             public void run() {
+Log.d(TAG, "Bound service triggers scanWifi()");
                 wifiSelector.scanWifi();
-                handler.postDelayed(this, 1000 * 30 * userOptions.getAlarmInterval());
-//                handler.postDelayed(this, 1000 * 60 * userOptions.getAlarmInterval());
+//                handler.postDelayed(this, 1000 * 30 * userOptions.getAlarmInterval());
+                handler.postDelayed(this, 1000 * 60 * UserOptions.getAlarmInterval());
             }
         };
-        handler.postDelayed(periodicUpdate, 1000  * 30 * userOptions.getAlarmInterval());
-//        handler.postDelayed(periodicUpdate, 1000  * 60 * userOptions.getAlarmInterval());
+//        handler.postDelayed(periodicUpdate, 1000  * 30 * userOptions.getAlarmInterval());
+        handler.postDelayed(periodicUpdate, 1000  * 60 * UserOptions.getAlarmInterval());
 
     }
 
@@ -81,15 +81,8 @@ public class WifiBoundService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-Log.d(TAG, "service onBind");
+//Log.d(TAG, "service onBind");
 
-//        if ( boundOnly){
-            if (intent != null && intent.getSerializableExtra("UserOptions") != null) {
-                userOptions = (UserOptions) intent.getSerializableExtra("UserOptions");
-            }
-            else{
-                userOptions = UserOptionsHelper.loadUserOptions();
-            }
 
             mainWork();
 
@@ -107,12 +100,12 @@ Log.d(TAG, "service onBind");
 
     @Override
     public void onRebind(Intent intent) {
-Log.d(TAG, "service onRebind");
+//Log.d(TAG, "service onRebind");
         super.onRebind(intent);
     }
     @Override
     public boolean onUnbind(Intent intent) {
-Log.d(TAG, "service onUnbind");
+//Log.d(TAG, "service onUnbind");
 //        if (boundOnly) {
 //Log.d(TAG, "Stopping periodicUpdate") ;
             handler.removeCallbacks(periodicUpdate);
@@ -134,8 +127,5 @@ Log.d(TAG, "service onUnbind");
         return registeredSSIDList;
     }
 
-    public void setUserOptions(UserOptions userOptions) {
-        this.userOptions = userOptions;
-        wifiSelector.setUserOptions(userOptions);
-    }
+
 }

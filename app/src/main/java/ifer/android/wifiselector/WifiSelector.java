@@ -23,7 +23,6 @@ public class WifiSelector {
     private List<ScanResult> results;
     private ArrayList<WifiEntry> wifiArrayList = new ArrayList<WifiEntry>();
     private ArrayList<String> registeredSSIDList = new ArrayList<String>();
-    private UserOptions userOptions;
     private WifiEntry lastWifiConnected;
     private SharedPreferences settings;
 
@@ -34,7 +33,7 @@ public class WifiSelector {
         wifiManager = (WifiManager) context.getSystemService(this.context.WIFI_SERVICE);
         settings = context.getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
 
-        userOptions = UserOptionsHelper.loadUserOptions();
+        UserOptions.load();
 
     }
 
@@ -74,7 +73,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
                 if(registeredSSIDList.contains(scanResult.SSID)){
                     wfe.setRegistered(true);
                 }
-                if (userOptions.getSelectedSSIDs().contains(scanResult.SSID)){
+                if (UserOptions.getSelectedSSIDs().contains(scanResult.SSID)){
 //                    Log.d(MainActivity.TAG, "selected: " + scanResult.SSID);
                     wfe.setSelected(true);
                 }
@@ -85,7 +84,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
             }
             Collections.sort(wifiArrayList);
 
-            if (userOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
+            if (UserOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
                 connectToWifiSSID(context,chooseWifiToConnect());
 //                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
             }
@@ -107,7 +106,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
         // Bypass all entries which are not either registered or selected
         for (WifiEntry we : wifiArrayList){
             if((! registeredSSIDList.contains(we.getSsid())) ||
-               (! userOptions.getSelectedSSIDs().contains(we.getSsid())) ){
+               (! UserOptions.getSelectedSSIDs().contains(we.getSsid())) ){
                 continue;
             }
             weChosen = we;
@@ -119,7 +118,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
         if (lastWifiConnected == null ||
                 (! registeredSSIDList.contains(lastWifiConnected.getSsid())) ||
-                (! userOptions.getSelectedSSIDs().contains(lastWifiConnected.getSsid()))){
+                (! UserOptions.getSelectedSSIDs().contains(lastWifiConnected.getSsid()))){
 
             lastWifiConnected = weChosen;
             return (weChosen.getSsid());
@@ -129,7 +128,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
             return (lastWifiConnected.getSsid());
         }
         else {
-            if ((weChosen.getSignalPercentage() - lastWifiConnected.getSignalPercentage()) < userOptions.getMinSwitchDiff()){
+            if ((weChosen.getSignalPercentage() - lastWifiConnected.getSignalPercentage()) < UserOptions.getMinSwitchDiff()){
                 return (lastWifiConnected.getSsid());
             }
             else {
@@ -164,7 +163,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
 
     private void connectToWifiSSID(Context context, String ssid) {
-Log.d(TAG, "Connecting to " + ssid);
+//Log.d(TAG, "Connecting to " + ssid);
         if (curSSID != null && curSSID.equals(ssid)){
             return;
         }
@@ -209,7 +208,4 @@ Log.d(TAG, "Connecting to " + ssid);
         return registeredSSIDList;
     }
 
-    public void setUserOptions(UserOptions userOptions) {
-        this.userOptions = userOptions;
-    }
 }

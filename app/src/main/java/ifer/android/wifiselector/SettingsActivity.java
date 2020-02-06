@@ -17,7 +17,7 @@ import android.widget.RadioButton;
 import static ifer.android.wifiselector.AndroidUtils.*;
 
 public class SettingsActivity extends AppCompatActivity {
-    private  UserOptions userOptions;
+//    private  UserOptions userOptions;
 
     private CheckBox chkBackgrnd    ;
     private CheckBox chkAutoconnect ;
@@ -56,14 +56,14 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void loadUserOptions(){
-        userOptions = UserOptionsHelper.loadUserOptions();
+        UserOptions.load();
 
-        chkBackgrnd.setChecked(userOptions.isRunInBackground());
-        chkAutoconnect.setChecked(userOptions.isAutoConnectToStrongest());
-        etSwitchDiff.setText(String.valueOf(userOptions.getMinSwitchDiff()));
+        chkBackgrnd.setChecked(UserOptions.isRunInBackground());
+        chkAutoconnect.setChecked(UserOptions.isAutoConnectToStrongest());
+        etSwitchDiff.setText(String.valueOf(UserOptions.getMinSwitchDiff()));
 
 
-        int intv = userOptions.getAlarmInterval();
+        int intv = UserOptions.getAlarmInterval();
         switch (intv){
             case 1: radOne.setChecked(true);
             break;
@@ -81,8 +81,8 @@ public class SettingsActivity extends AppCompatActivity {
                 break;
         }
 
-        oldRunInBackground = userOptions.isRunInBackground(); //keep initial value
-        oldSwitchDiff = userOptions.getMinSwitchDiff();
+        oldRunInBackground = UserOptions.isRunInBackground(); //keep initial value
+        oldSwitchDiff = UserOptions.getMinSwitchDiff();
     }
 
     public void onRadioButtonClicked(View view) {
@@ -93,23 +93,23 @@ public class SettingsActivity extends AppCompatActivity {
         switch(view.getId()) {
             case R.id.intv_one:
                 if (checked)
-                    userOptions.setAlarmInterval(1);
+                    UserOptions.setAlarmInterval(1);
                     break;
             case R.id.intv_two:
                 if (checked)
-                    userOptions.setAlarmInterval(2);
+                    UserOptions.setAlarmInterval(2);
                     break;
             case R.id.intv_five:
                 if (checked)
-                    userOptions.setAlarmInterval(5);
+                    UserOptions.setAlarmInterval(5);
                     break;
             case R.id.intv_fifteen:
                 if (checked)
-                    userOptions.setAlarmInterval(15);
+                    UserOptions.setAlarmInterval(15);
                     break;
             case R.id.intv_thirty:
                 if (checked)
-                    userOptions.setAlarmInterval(30);
+                    UserOptions.setAlarmInterval(30);
                 break;
         }
 
@@ -124,15 +124,15 @@ public class SettingsActivity extends AppCompatActivity {
         switch(view.getId()) {
             case R.id.checkbox_backgrnd:
                 if (checked)
-                    userOptions.setRunInBackground(true);
+                    UserOptions.setRunInBackground(true);
                 else
-                    userOptions.setRunInBackground(false);
+                    UserOptions.setRunInBackground(false);
                 break;
             case R.id.checkbox_autoconnect:
                 if (checked)
-                    userOptions.setAutoConnectToStrongest(true);
+                    UserOptions.setAutoConnectToStrongest(true);
                 else
-                    userOptions.setAutoConnectToStrongest(false);
+                    UserOptions.setAutoConnectToStrongest(false);
                 break;
 
         }
@@ -160,13 +160,13 @@ public class SettingsActivity extends AppCompatActivity {
                 if (validateSwitchDiff() == false){
                     return true;
                 }
-                userOptions.setMinSwitchDiff( getIntegerFromTextView(etSwitchDiff));
+                UserOptions.setMinSwitchDiff( getIntegerFromTextView(etSwitchDiff));
 
-                UserOptionsHelper.saveUserOptions(userOptions, null);
+                UserOptions.save();
 
                 //Notify main activity if runInBackground has chenged
                 boolean runInBackgroundChanged = false;
-                if (userOptions.isRunInBackground() != oldRunInBackground){
+                if (UserOptions.isRunInBackground() != oldRunInBackground){
                     runInBackgroundChanged = true;
                 }
                 Intent output = new Intent();
