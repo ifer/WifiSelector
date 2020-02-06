@@ -21,9 +21,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,7 +32,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import static ifer.android.wifiselector.AndroidUtils.*;
+import static ifer.android.wifiselector.AndroidUtils.showPopupInfo;
+import static ifer.android.wifiselector.AndroidUtils.showToastMessage;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         jobScheduler = (JobScheduler)getApplicationContext().getSystemService(JOB_SCHEDULER_SERVICE);
 
 
-        settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
+        settings = getApplicationContext().getSharedPreferences(UserOptions.SETTINGS_NAME, 0);
 
 
         tvCurSSID = findViewById(R.id.curSSID);
@@ -120,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
         }
 //Log.d(TAG, "activity initApp");
 
-//        userOptions = UserOptionsHelper.loadUserOptions();
         UserOptions.load();
 
         //Check if wifi is enabled
@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean runInBackgroundChanged = false;
         if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK && data != null) {
-            UserOptionsHelper.loadUserOptions();
+            UserOptions.load();
             runInBackgroundChanged = data.getBooleanExtra("runInBackgroundChanged", false);
         }
 //        if (runInBackgroundChanged){

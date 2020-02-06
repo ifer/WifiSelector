@@ -17,7 +17,6 @@ public class WifiJobService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-//        userOptions = UserOptionsHelper.loadUserOptions();
 Log.d(TAG, "Job service triggers scanWifi()");
 
         wifiSelector.scanWifi();

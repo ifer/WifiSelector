@@ -140,7 +140,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private boolean validateSwitchDiff (){
-//        if ()
         Integer switchDiff = getIntegerFromTextView(etSwitchDiff);
         if (switchDiff == null || switchDiff < 0 || switchDiff > 100){
             showToastMessage(this, getString(R.string.error_switch_diff));

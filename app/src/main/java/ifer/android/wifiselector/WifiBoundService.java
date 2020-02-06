@@ -1,11 +1,9 @@
 package ifer.android.wifiselector;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -40,9 +38,7 @@ public class WifiBoundService extends Service {
     public void onCreate() {
         super.onCreate();
 //Log.d(TAG, "service onCreate");
-//        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifiSelector = new WifiSelector();
-//        settings = getApplicationContext().getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
 
     }
 

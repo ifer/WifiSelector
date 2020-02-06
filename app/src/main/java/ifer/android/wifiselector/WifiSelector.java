@@ -31,7 +31,7 @@ public class WifiSelector {
     public WifiSelector(){
         this.context = GlobalApplication.getAppContext();
         wifiManager = (WifiManager) context.getSystemService(this.context.WIFI_SERVICE);
-        settings = context.getSharedPreferences(UserOptionsHelper.SETTINGS_NAME, 0);
+        settings = context.getSharedPreferences(UserOptions.SETTINGS_NAME, 0);
 
         UserOptions.load();
 
