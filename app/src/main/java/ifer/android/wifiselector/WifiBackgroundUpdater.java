@@ -63,7 +63,7 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
         AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
 
         Intent intent = new Intent(context, WifiBackgroundUpdater.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmManager.cancel(pendingIntent);
     }

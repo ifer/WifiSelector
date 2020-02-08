@@ -202,13 +202,13 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 //Log.d(TAG, "activity onResume");
         if (permissionGranted) {
-            if (UserOptions.isRunInBackground()) {
-                WifiBackgroundUpdater.cancelPeriodicAlarm();
+//            if (UserOptions.isRunInBackground()) {
                 if (wifiBackgroundUpdater != null) {
+                    WifiBackgroundUpdater.cancelPeriodicAlarm();
                     getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
                     wifiBackgroundUpdater = null;
                 }
-            }
+//            }
 
 
             if (updateReceiver == null) {
@@ -326,6 +326,15 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK && data != null) {
             UserOptions.load();
             runInBackgroundChanged = data.getBooleanExtra("runInBackgroundChanged", false);
+        }
+        if (runInBackgroundChanged && UserOptions.isRunInBackground() == false){
+Log.d(TAG, "Option changed, cancel backgroun updates");
+            if (wifiBackgroundUpdater != null) {
+                WifiBackgroundUpdater.cancelPeriodicAlarm();
+                getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
+                wifiBackgroundUpdater = null;
+            }
+
         }
     }
 
