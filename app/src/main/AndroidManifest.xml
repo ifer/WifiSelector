@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"></uses-permission>
 
     <application
         android:name=".GlobalApplication"
@@ -34,6 +35,21 @@
 
         <service android:name=".WifiBoundService"></service>
 
+        <receiver android:name="WifiReceiver">
+            <intent-filter>
+               <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!--<receiver android:name="WifiReceiver"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+                <!--<action android:name="WifiReceiver.ACTION_SCAN_WIFI" />-->
+                <!--<action android:name="android.intent.action.ACTION_SCREEN_ON" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <service android:name=".WifiJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" ></service>
