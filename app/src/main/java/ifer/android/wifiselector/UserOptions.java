@@ -17,8 +17,7 @@ public class UserOptions implements Serializable {
 
 
     private static boolean runInBackground = true;
-
-    private static int alarmInterval = 1; //minutes
+    private static int alarmInterval = 2; //minutes
     private static boolean autoConnectToStrongest = true;
     private static int minSwitchDiff = 10;
     private static HashSet<String> selectedSSIDs = new HashSet<String>();

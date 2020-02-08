@@ -25,7 +25,7 @@ Log.d(TAG, "Job service triggers scanWifi()");
         wifiSelector.scanWifi();
 
         //Reschedule
-        MainActivity.schedulePeriodicJob();
+//        MainActivity.schedulePeriodicJob();
 
         return false;
     }

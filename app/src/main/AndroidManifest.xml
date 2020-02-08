@@ -35,18 +35,18 @@
 
         <service android:name=".WifiBoundService"></service>
 
-        <receiver android:name="WifiReceiver">
+        <receiver android:name=".WifiBackgroundUpdater">
             <intent-filter>
                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <!--<receiver android:name="WifiReceiver"-->
+        <!--<receiver android:name="WifiBackgroundUpdater"-->
             <!--android:enabled="true"-->
             <!--android:exported="true">-->
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
-                <!--<action android:name="WifiReceiver.ACTION_SCAN_WIFI" />-->
+                <!--<action android:name="WifiBackgroundUpdater.ACTION_SCAN_WIFI" />-->
                 <!--<action android:name="android.intent.action.ACTION_SCREEN_ON" />-->
             <!--</intent-filter>-->
         <!--</receiver>-->

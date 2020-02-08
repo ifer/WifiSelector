@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -27,15 +26,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashSet;
-import java.util.TimeZone;
 
 import static ifer.android.wifiselector.AndroidUtils.showPopupInfo;
 import static ifer.android.wifiselector.AndroidUtils.showToastMessage;
@@ -45,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
     private static final int SETTINGS_REQUEST = 101;
     public static final int JOBID = 1;
-    private static final TimeZone timezoneAthens = TimeZone.getTimeZone("Europe/Athens");
 
     public static final String ACTION_DATA_REFRESH = "DataRefresh";
     public static final String ACTION_WIFI_SELECTION_CHANGED = "wifi_selection_changed";
@@ -57,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private ListView listView;
-//    private Button buttonScan;
-//    private Button buttonSave;
-
     private TextView tvCurSSID;
     private int size = 0;
     private String curSSID;
@@ -69,19 +61,14 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences settings;
     private HashSet<String> selectedSSIDs;
 
-    private static JobScheduler jobScheduler;
-    private WifiReceiver wifiReceiver;
-
-//    private UserOptions userOptions = new UserOptions();
-
+//    private static JobScheduler jobScheduler;
+    private WifiBackgroundUpdater wifiBackgroundUpdater;
     private WifiBoundService wifiBoundService;
     public UpdateReceiver updateReceiver;
-//    private BoundService mBoundService;
-    private boolean serviceBound = false;
 
+    private boolean serviceBound = false;
     private boolean permissionGranted = false;
 
-//    private WifiSelector wifiSelector = new WifiSelector();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
                 if (serviceBound == true && wifiBoundService != null){
                     showToastMessage(getApplicationContext(), getString(R.string.scanWifiMessage));
                     wifiBoundService.scanWifi();
@@ -107,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        jobScheduler = (JobScheduler) this.getSystemService(JOB_SCHEDULER_SERVICE);
+//        jobScheduler = (JobScheduler) this.getSystemService(JOB_SCHEDULER_SERVICE);
 
         settings = getApplicationContext().getSharedPreferences(UserOptions.SETTINGS_NAME, 0);
 
@@ -159,14 +144,15 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void registerWifiReceiver(){
+    // Register BroadCastReceiver for background updating when app is off
+    private void registerWifiBackgroundUpdater(){
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WifiReceiver.ACTION_SCAN_WIFI);
+        filter.addAction(WifiBackgroundUpdater.ACTION_SCAN_WIFI);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_BOOT_COMPLETED);
 
-        wifiReceiver = new WifiReceiver();
-        getApplicationContext().registerReceiver(wifiReceiver, filter);
+        wifiBackgroundUpdater = new WifiBackgroundUpdater();
+        getApplicationContext().registerReceiver(wifiBackgroundUpdater, filter);
     }
 
 
@@ -175,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
     // binding terminates along with the app, and the service stops working
     private void bindWifiBoundService(){
         Intent intent = new Intent(this, WifiBoundService.class);
-//        intent.putExtra("UserOptions", userOptions);
 
         bindService(intent, boundServiceConnection, Context.BIND_AUTO_CREATE);
         serviceBound = true;
@@ -192,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // OnStart event: bind the bound service, and cancel scheduled job
+    // OnStart event: bind the bound service
     @Override
     protected void onStart() {
         super.onStart();
@@ -201,16 +186,14 @@ public class MainActivity extends AppCompatActivity {
         if (permissionGranted) {
             bindWifiBoundService();
 
-            jobScheduler.cancelAll();
-
-            registerWifiReceiver();
-//            schedulePeriodicAlarm();
         }
 
     }
 
-    //OnResume event: create the UpdateReceiver (if not already created).
-    //Then register  the receiver for that it receives messages:
+    //OnResume event:
+    // Cancel background jobs and unregister the WifiBackgroundUpdater.
+    // Create the UpdateReceiver (if not already created).
+    // Then register  the receiver for that it receives messages:
     // - From WifiBoundService that data have been refreshed
     // - From ScanAdapter that the list of selected WiFis is changed
 
@@ -219,53 +202,51 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 //Log.d(TAG, "activity onResume");
         if (permissionGranted) {
-            WifiReceiver.cancelPeriodicAlarm();
-            if (wifiReceiver != null) {
-                getApplicationContext().unregisterReceiver(wifiReceiver);
-                wifiReceiver = null;
+            if (UserOptions.isRunInBackground()) {
+                WifiBackgroundUpdater.cancelPeriodicAlarm();
+                if (wifiBackgroundUpdater != null) {
+                    getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
+                    wifiBackgroundUpdater = null;
+                }
             }
+
 
             if (updateReceiver == null) {
                 updateReceiver = new UpdateReceiver();
             }
-
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(ACTION_DATA_REFRESH);
             intentFilter.addAction(ACTION_WIFI_SELECTION_CHANGED);
             getApplicationContext().registerReceiver(updateReceiver, intentFilter);
-
-
-
         }
     }
 
 
-    // OnPause event: unregister the receiver
+    // OnPause event:
+    // Unregister the updateReceiver
+    // Register the WifiBackgroundUpdater and schedule its jobs
     @Override
     protected void onPause(){
         super.onPause();
-Log.d(TAG, "activity onPause");
+//Log.d(TAG, "activity onPause");
         if (updateReceiver != null) {
             getApplicationContext().unregisterReceiver(updateReceiver);
         }
-        registerWifiReceiver();
-        WifiReceiver.schedulePeriodicAlarm();
+
+        if (UserOptions.isRunInBackground()) {
+            registerWifiBackgroundUpdater();
+            WifiBackgroundUpdater.schedulePeriodicAlarm();
+        }
     }
 
-    // OnStop event: unbint the WifiBoundService
-    // and schedule the JobService
-
+    // OnStop event: unbind the WifiBoundService
     @Override
     protected void onStop() {
         super.onStop();
-Log.d(TAG, "activity onStop");
+//Log.d(TAG, "activity onStop");
 
         unbindWifiBoundService();
 
-        if(UserOptions.isRunInBackground()){
-//            schedulePeriodicJob();
-//            schedulePeriodicAlarm();
-        }
     }
 
     //Update all data
@@ -283,50 +264,28 @@ Log.d(TAG, "activity onStop");
 
     }
 
-    public  void schedulePeriodicAlarm() {
-        AlarmManager alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        Intent intent = new Intent(this, WifiReceiver.class);
-        intent.setAction(WifiReceiver.ACTION_SCAN_WIFI);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), WifiReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        long intervalMillis = UserOptions.getAlarmInterval() * 60 * 1000;
-
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(), intervalMillis, pendingIntent);
-
-//        Toast.makeText(this, "Alarm set every 15 seconds", Toast.LENGTH_LONG).show();
-    }
-
-//    public void cancelPeriodicAlarm() {
-//Log.d(TAG, "Cancelling alarm..");
-//        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//        Intent intent = new Intent(this, WifiReceiver.class);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), WifiReceiver.REQUEST_CODE, intent, 0);
-//        alarmManager.cancel(pendingIntent);
+//    //Schedule the periodic job which runs when app is off
+//    public static void schedulePeriodicJob(){
+////Log.d(TAG, "Scheduling for every " + UserOptions.getAlarmInterval() + " min");
+//
+//        Context appContext = GlobalApplication.getAppContext();
+//
+//        ComponentName componentName = new ComponentName(appContext, WifiJobService.class);
+//        long timePeriodMillisMin = UserOptions.getAlarmInterval() * 50 * 1000;
+//        long timePeriodMillisMax = UserOptions.getAlarmInterval() * 70 * 1000;
+//
+//        //.setPeriodic does not work for intervals < 15min and android >= Android N
+//        JobInfo jobinfo = new JobInfo.Builder(JOBID, componentName)
+////                                    .setPeriodic(timePeriodMillis)
+//                                    .setMinimumLatency(timePeriodMillisMin)
+//                                    .setOverrideDeadline(timePeriodMillisMax)
+//                                    .setPersisted(true)
+//                                    .build();
+//        jobScheduler.schedule(jobinfo);
 //    }
-
-
-
-    //Schedule the periodic job which runs when app is off
-    public static void schedulePeriodicJob(){
-//Log.d(TAG, "Scheduling for every " + UserOptions.getAlarmInterval() + " min");
-
-        Context appContext = GlobalApplication.getAppContext();
-
-        ComponentName componentName = new ComponentName(appContext, WifiJobService.class);
-        long timePeriodMillisMin = UserOptions.getAlarmInterval() * 50 * 1000;
-        long timePeriodMillisMax = UserOptions.getAlarmInterval() * 70 * 1000;
-
-        //.setPeriodic does not work for intervals < 15min and android >= Android N
-        JobInfo jobinfo = new JobInfo.Builder(JOBID, componentName)
-//                                    .setPeriodic(timePeriodMillis)
-                                    .setMinimumLatency(timePeriodMillisMin)
-                                    .setOverrideDeadline(timePeriodMillisMax)
-                                    .setPersisted(true)
-                                    .build();
-        jobScheduler.schedule(jobinfo);
-    }
 
 
 
@@ -376,7 +335,7 @@ Log.d(TAG, "activity onStop");
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_DATA_REFRESH)) {
-Log.d(TAG, "Update data!");
+//Log.d(TAG, "Update data!");
                 updateData(intent);
             }
             else if (intent.getAction().equals(ACTION_WIFI_SELECTION_CHANGED)) {
@@ -389,7 +348,6 @@ Log.d(TAG, "Update data!");
                 else {
                     UserOptions.getSelectedSSIDs().remove(ssid);
                 }
-//                wifiBoundService.setUserOptions(userOptions);
                 UserOptions.save();
             }
 

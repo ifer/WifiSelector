@@ -8,9 +8,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 
-import java.util.TimeZone;
-
-public class WifiReceiver extends BroadcastReceiver {
+public class WifiBackgroundUpdater extends BroadcastReceiver {
     public static final String TAG="WifiSelector";
 //    private static final TimeZone timezoneAthens = TimeZone.getTimeZone("Europe/Athens");
 
@@ -21,7 +19,7 @@ public class WifiReceiver extends BroadcastReceiver {
 
     private WifiSelector wifiSelector = new WifiSelector();
 
-    public WifiReceiver(){
+    public WifiBackgroundUpdater(){
         this.context = GlobalApplication.getAppContext();
     }
 
@@ -47,10 +45,10 @@ public class WifiReceiver extends BroadcastReceiver {
         Context context = GlobalApplication.getAppContext();
         AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
 
-        Intent intent = new Intent(context, WifiReceiver.class);
-        intent.setAction(WifiReceiver.ACTION_SCAN_WIFI);
+        Intent intent = new Intent(context, WifiBackgroundUpdater.class);
+        intent.setAction(WifiBackgroundUpdater.ACTION_SCAN_WIFI);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         long intervalMillis = UserOptions.getAlarmInterval() * 60 * 1000;
 
@@ -64,8 +62,8 @@ public class WifiReceiver extends BroadcastReceiver {
         Context context = GlobalApplication.getAppContext();
         AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
 
-        Intent intent = new Intent(context, WifiReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiReceiver.REQUEST_CODE, intent, 0);
+        Intent intent = new Intent(context, WifiBackgroundUpdater.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, 0);
 
         alarmManager.cancel(pendingIntent);
     }
