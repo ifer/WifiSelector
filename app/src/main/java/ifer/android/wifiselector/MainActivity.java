@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private WifiBackgroundUpdater wifiBackgroundUpdater;
     private WifiBoundService wifiBoundService;
     public UpdateReceiver updateReceiver;
+    private WifiScanResultsReceiver wifiScanResultsReceiver;
 
     private boolean serviceBound = false;
     private boolean permissionGranted = false;
@@ -100,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
         tvCurSSID = findViewById(R.id.curSSID);
 
         listView = findViewById(R.id.wifiList);
+
+        wifiScanResultsReceiver = null;
 
         requestPermissionForLocation();
 
@@ -208,6 +211,10 @@ public class MainActivity extends AppCompatActivity {
                     getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
                     wifiBackgroundUpdater = null;
                 }
+                if (wifiScanResultsReceiver != null) {
+                    getApplicationContext().unregisterReceiver(wifiScanResultsReceiver);
+                    wifiScanResultsReceiver = null;
+                }
 //            }
 
 
@@ -235,7 +242,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (UserOptions.isRunInBackground()) {
             registerWifiBackgroundUpdater();
-            WifiBackgroundUpdater.schedulePeriodicAlarm();
+//            WifiBackgroundUpdater.schedulePeriodicAlarm();
+            WifiBackgroundUpdater.scheduleAlarm();
+
+            //Register receiver to receive scans made by the system
+            wifiScanResultsReceiver = new WifiScanResultsReceiver();
+            getApplicationContext().registerReceiver(wifiScanResultsReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
         }
     }
 

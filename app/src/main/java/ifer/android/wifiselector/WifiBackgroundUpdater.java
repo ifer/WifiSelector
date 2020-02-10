@@ -26,18 +26,17 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Alarm received");
+        wifiSelector.scanWifi();
+        scheduleAlarm();
+
         if (intent.getAction().equals(ACTION_SCAN_WIFI)){
             Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
-            wifiSelector.scanWifi();
         }
         else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
             Log.d(TAG, "ACTION_BOOT_COMPLETED: Alarm service triggers scanWifi() and reschedules");
-            wifiSelector.scanWifi();
-            schedulePeriodicAlarm();
         }
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
             Log.d(TAG, "SCREEN ON: Alarm service triggers scanWifi()");
-            wifiSelector.scanWifi();
         }
     }
 
@@ -52,9 +51,22 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
 
         long intervalMillis = UserOptions.getAlarmInterval() * 60 * 1000;
 
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(), intervalMillis, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), intervalMillis, pendingIntent);
 
 //        Toast.makeText(this, "Alarm set every 15 seconds", Toast.LENGTH_LONG).show();
+    }
+
+    public static void scheduleAlarm() {
+        Context context = GlobalApplication.getAppContext();
+        AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+
+//        int refresh_interval = interval;
+        Intent intent = new Intent(context, WifiBackgroundUpdater.class);
+//        PendingIntent pi=PendingIntent.getBroadcast(context, 0, i, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long intervalMillis = UserOptions.getAlarmInterval() * 60 * 1000;
+        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+intervalMillis, pendingIntent);
+
     }
 
     public static void cancelPeriodicAlarm() {
@@ -63,7 +75,9 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
         AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
 
         Intent intent = new Intent(context, WifiBackgroundUpdater.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
+        intent.setAction(WifiBackgroundUpdater.ACTION_SCAN_WIFI);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmManager.cancel(pendingIntent);
     }

@@ -47,6 +47,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
         wifiArrayList.clear();
         context.registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wifiManager.startScan();
+//Log.d(MainActivity.TAG, "startScan");
 
     }
 
@@ -55,57 +56,113 @@ Log.d(MainActivity.TAG, "scanWifi!");
         public void onReceive(Context context, Intent intent) {
             results = wifiManager.getScanResults();
             context.unregisterReceiver(this);
+            processScanResults(results);
 
-            for (ScanResult scanResult : results) {
-                int percentage = WifiManager.calculateSignalLevel(scanResult.level, 100);
+//Log.d(TAG, "wifiReceiver");
+//            for (ScanResult scanResult : results) {
+//                int percentage = WifiManager.calculateSignalLevel(scanResult.level, 100);
+////Log.d(TAG, "scanResult.level=" + scanResult.level + ", level=" + level) ;
+////                int percentage = (int) ((level / 10.0) * 100);
+//
+//                WifiEntry wfe = new WifiEntry();
+//
+//                if (scanResult.SSID == null || scanResult.SSID.trim().equals("")) {
+//                    scanResult.SSID = "<SSID undefined>";
+//                }
+//                wfe.setSsid(scanResult.SSID);
+//                wfe.setSignalLevel(String.valueOf(scanResult.level));
+//                wfe.setSignalPercentage(percentage);
+//                wfe.setSignalLabel(String.valueOf(percentage) + "%");
+//
+//                if(registeredSSIDList.contains(scanResult.SSID)){
+//                    wfe.setRegistered(true);
+//                }
+//                if (UserOptions.getSelectedSSIDs().contains(scanResult.SSID)){
+////                    Log.d(MainActivity.TAG, "selected: " + scanResult.SSID);
+//                    wfe.setSelected(true);
+//                }
+//
+//                wifiArrayList.add(wfe);
+//
+////                scanAdapter.notifyDataSetChanged();
+//            }
+//            Collections.sort(wifiArrayList);
+//
+//Log.d(TAG, "wifiArrayList.size="+wifiArrayList.size());
+//            if (UserOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
+//                String chosenSSID = chooseWifiToConnect();
+//
+//                if (chosenSSID != null) // SSIDs selected
+//                    connectToWifiSSID(context, chosenSSID);
+//
+////                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
+//            }
+//
+//            curSSID = getWifiSSID(GlobalApplication.getAppContext());
+//
+//            Intent updateIntent = new Intent();
+//            updateIntent.setAction(MainActivity.ACTION_DATA_REFRESH);
+//            updateIntent.putExtra("wifiArrayList", wifiArrayList);
+//            updateIntent.putExtra("curSSID", curSSID);
+//            updateIntent.putExtra("registeredSSIDList", registeredSSIDList);
+//
+//
+//            context.sendBroadcast(updateIntent);
+        }
+    };
+
+    public void processScanResults ( List<ScanResult> results){
+        for (ScanResult scanResult : results) {
+            int percentage = WifiManager.calculateSignalLevel(scanResult.level, 100);
 //Log.d(TAG, "scanResult.level=" + scanResult.level + ", level=" + level) ;
 //                int percentage = (int) ((level / 10.0) * 100);
 
-                WifiEntry wfe = new WifiEntry();
+            WifiEntry wfe = new WifiEntry();
 
-                if (scanResult.SSID == null || scanResult.SSID.trim().equals("")) {
-                    scanResult.SSID = "<SSID undefined>";
-                }
-                wfe.setSsid(scanResult.SSID);
-                wfe.setSignalLevel(String.valueOf(scanResult.level));
-                wfe.setSignalPercentage(percentage);
-                wfe.setSignalLabel(String.valueOf(percentage) + "%");
+            if (scanResult.SSID == null || scanResult.SSID.trim().equals("")) {
+                scanResult.SSID = "<SSID undefined>";
+            }
+            wfe.setSsid(scanResult.SSID);
+            wfe.setSignalLevel(String.valueOf(scanResult.level));
+            wfe.setSignalPercentage(percentage);
+            wfe.setSignalLabel(String.valueOf(percentage) + "%");
 
-                if(registeredSSIDList.contains(scanResult.SSID)){
-                    wfe.setRegistered(true);
-                }
-                if (UserOptions.getSelectedSSIDs().contains(scanResult.SSID)){
+            if(registeredSSIDList.contains(scanResult.SSID)){
+                wfe.setRegistered(true);
+            }
+            if (UserOptions.getSelectedSSIDs().contains(scanResult.SSID)){
 //                    Log.d(MainActivity.TAG, "selected: " + scanResult.SSID);
-                    wfe.setSelected(true);
-                }
+                wfe.setSelected(true);
+            }
 
-                wifiArrayList.add(wfe);
+            wifiArrayList.add(wfe);
 
 //                scanAdapter.notifyDataSetChanged();
-            }
-            Collections.sort(wifiArrayList);
+        }
+        Collections.sort(wifiArrayList);
 
-            if (UserOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
-                String chosenSSID = chooseWifiToConnect();
+        Log.d(TAG, "wifiArrayList.size="+wifiArrayList.size());
+        if (UserOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
+            String chosenSSID = chooseWifiToConnect();
 
-                if (chosenSSID != null) // SSIDs selected
-                    connectToWifiSSID(context, chosenSSID);
+            if (chosenSSID != null) // SSIDs selected
+                connectToWifiSSID(context, chosenSSID);
 
 //                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
-            }
-
-            curSSID = getWifiSSID(GlobalApplication.getAppContext());
-
-            Intent updateIntent = new Intent();
-            updateIntent.setAction(MainActivity.ACTION_DATA_REFRESH);
-            updateIntent.putExtra("wifiArrayList", wifiArrayList);
-            updateIntent.putExtra("curSSID", curSSID);
-            updateIntent.putExtra("registeredSSIDList", registeredSSIDList);
-
-
-            context.sendBroadcast(updateIntent);
         }
-    };
+
+        curSSID = getWifiSSID(GlobalApplication.getAppContext());
+
+        Intent updateIntent = new Intent();
+        updateIntent.setAction(MainActivity.ACTION_DATA_REFRESH);
+        updateIntent.putExtra("wifiArrayList", wifiArrayList);
+        updateIntent.putExtra("curSSID", curSSID);
+        updateIntent.putExtra("registeredSSIDList", registeredSSIDList);
+
+
+        context.sendBroadcast(updateIntent);
+
+    }
 
     private String chooseWifiToConnect(){
         WifiEntry weChosen = null;
@@ -117,7 +174,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
                 continue;
             }
             weChosen = we;
-//Log.d(TAG, "1. weChosen=" + weChosen.getSsid());
+Log.d(TAG, "1. weChosen=" + weChosen.getSsid());
             break;
         }
 
