@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG="WifiSelector";
     private final String VERSION_PATTERN = "@version@";
 
+    public static final String CHANNEL_ID = "ForegroundServiceChannel";
 
 
     private ListView listView;
@@ -203,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//Log.d(TAG, "activity onResume");
+Log.d(TAG, "activity onResume");
         if (permissionGranted) {
 //            if (UserOptions.isRunInBackground()) {
                 if (wifiBackgroundUpdater != null) {
@@ -235,15 +236,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-//Log.d(TAG, "activity onPause");
+Log.d(TAG, "activity onPause");
         if (updateReceiver != null) {
             getApplicationContext().unregisterReceiver(updateReceiver);
         }
 
         if (UserOptions.isRunInBackground()) {
             registerWifiBackgroundUpdater();
-//            WifiBackgroundUpdater.schedulePeriodicAlarm();
-            WifiBackgroundUpdater.scheduleAlarm();
+            WifiBackgroundUpdater.schedulePeriodicAlarm();
+//            WifiBackgroundUpdater.scheduleAlarm();
 
             //Register receiver to receive scans made by the system
             wifiScanResultsReceiver = new WifiScanResultsReceiver();
@@ -256,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-//Log.d(TAG, "activity onStop");
+Log.d(TAG, "activity onStop");
 
         unbindWifiBoundService();
 

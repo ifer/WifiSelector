@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -25,9 +26,17 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "Alarm received");
-        wifiSelector.scanWifi();
-        scheduleAlarm();
+        Log.d(TAG, "Alarm received: " + intent.getAction());
+//        wifiSelector.scanWifi();
+//        Intent serviceIntent = new Intent(context, WifiForegroundService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(new Intent(context, WifiForegroundService.class));
+        } else {
+            context.startService(new Intent(context, WifiForegroundService.class));
+        }
+
+
+        schedulePeriodicAlarm();
 
         if (intent.getAction().equals(ACTION_SCAN_WIFI)){
             Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");

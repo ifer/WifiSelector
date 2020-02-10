@@ -22,6 +22,7 @@
     <string name="error_switch_diff">Minimum percentage difference must be an integer between 0 and 100</string>
     <string name="scanWifiMessage">Scanning wifi networks...</string>
     <string name="noconnection">No wifi connection</string>
+    <string name="notif_text">Scanning WiFi..</string>
 
     <string name="app_about">Copywrite ifer 2020</string>
     <string name="text_about">\nWifi Selector\n\n
