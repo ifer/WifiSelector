@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private WifiBackgroundUpdater wifiBackgroundUpdater;
     private WifiBoundService wifiBoundService;
     public UpdateReceiver updateReceiver;
-    private WifiScanResultsReceiver wifiScanResultsReceiver;
+//    private WifiScanResultsReceiver wifiScanResultsReceiver;
 
     private boolean serviceBound = false;
     private boolean permissionGranted = false;
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.wifiList);
 
-        wifiScanResultsReceiver = null;
+//        wifiScanResultsReceiver = null;
 
         requestPermissionForLocation();
 

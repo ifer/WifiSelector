@@ -44,6 +44,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
         WifiScanResultsReceiver wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
         if (! GlobalApplication.isReceiverRegistered()) {
+            Log.d(MainActivity.TAG, "registerWificanResultsReceiver!");
             GlobalApplication.registerWificanResultsReceiver();
         }
 
@@ -220,7 +221,7 @@ Log.d(TAG, "1. weChosen=" + weChosen.getSsid());
 
 
     private void connectToWifiSSID(Context context, String ssid) {
-//Log.d(TAG, "Connecting to " + ssid);
+Log.d(TAG, "Connecting to " + ssid);
         if (curSSID != null && curSSID.equals(ssid)){
             return;
         }
