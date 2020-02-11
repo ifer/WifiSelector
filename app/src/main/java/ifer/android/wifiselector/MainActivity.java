@@ -212,10 +212,10 @@ Log.d(TAG, "activity onResume");
                     getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
                     wifiBackgroundUpdater = null;
             }
-            if (GlobalApplication.isReceiverRegistered()) {
-                    GlobalApplication.unregisterWificanResultsReceiver();
-                    wifiScanResultsReceiver = null;
-            }
+//            if (GlobalApplication.isReceiverRegistered()) {
+//                    GlobalApplication.unregisterWificanResultsReceiver();
+//                    wifiScanResultsReceiver = null;
+//            }
 //            }
 
 
@@ -244,13 +244,12 @@ Log.d(TAG, "activity onPause");
         if (UserOptions.isRunInBackground()) {
             registerWifiBackgroundUpdater();
             WifiBackgroundUpdater.schedulePeriodicAlarm();
-//            WifiBackgroundUpdater.scheduleAlarm();
 
             //Register receiver to receive scans made by the system
-            wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
-            if (! GlobalApplication.isReceiverRegistered()) {
-               GlobalApplication.registerWificanResultsReceiver();
-            }
+//            wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
+//            if (! GlobalApplication.isReceiverRegistered()) {
+//               GlobalApplication.registerWificanResultsReceiver();
+//            }
 
         }
     }

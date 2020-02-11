@@ -12,6 +12,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+
+// Service that runs after the end of the visual activity.
+// It gets trifferred by WifiBackgroundUpdater at time intervals
+// specified by the user options.
+// It runs in the foreground (to make sure that the wifi scan will be done
+// by the system) and then terminates itsself
 public class WifiForegroundService extends Service {
     private static String TAG = "WifiSelector";
     private Context mContext;
@@ -32,7 +38,7 @@ public class WifiForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 Log.d(TAG, "service onStartCommand");
 
-//        GlobalApplication.registerWificanResultsReceiver();
+        GlobalApplication.registerWificanResultsReceiver();
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -78,7 +84,7 @@ Log.d(TAG, "service onStartCommand");
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        GlobalApplication.unregisterWificanResultsReceiver();
+        GlobalApplication.unregisterWificanResultsReceiver();
 
         Log.d(TAG, "service onDestroy");
 

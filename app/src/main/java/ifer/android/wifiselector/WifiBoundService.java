@@ -18,6 +18,9 @@ import android.support.v4.app.NotificationCompat;
 import java.util.ArrayList;
 import java.util.List;
 
+// Service that runs during the time that the visual activity is active.
+// It gets started and terminated by the MainActivity (onStart and OnStop events)
+// It performs periodic wifi scans using Handler
 public class WifiBoundService extends Service {
     private static String TAG = "WifiSelector";
 
@@ -81,50 +84,12 @@ Log.d(TAG, "Bound service triggers scanWifi()");
     }
 
 
-//    @Override
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//Log.d(TAG, "service onStartCommand");
-//
-//        Intent notificationIntent = new Intent(this, MainActivity.class);
-//        PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
-//
-//        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-//        {
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//            NotificationChannel notificationChannel = new NotificationChannel( MainActivity.CHANNEL_ID,
-//                    mContext.getString(R.string.notif_text),
-//                    importance);
-////            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
-//            mNotificationManager.createNotificationChannel(notificationChannel);
-//        }
-//
-//        Notification notification = new NotificationCompat.Builder(mContext, MainActivity.CHANNEL_ID)
-//                                            .setSmallIcon(R.mipmap.ic_wifisel)
-//                                            .setAutoCancel(true)
-//                                            .setContentTitle(mContext.getResources().getString(R.string.app_name))
-//                                            .setContentText(mContext.getResources().getString(R.string.notif_text))
-//                                            .setContentIntent(pendingIntent)
-//                                            .build();
-//        startForeground(1, notification);
-//
-//        wifiSelector.scanWifi();
-////        stopSelf();
-//
-//        return START_NOT_STICKY;
-//    }
-
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
 Log.d(TAG, "service onBind");
 
-
-            mainWork();
-
-//        }
+        mainWork();
 
         return mBinder;
     }
@@ -151,13 +116,7 @@ Log.d(TAG, "service onUnbind");
         return true;
     }
 
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//Log.d(TAG, "service onDestroy");
-//
-//
-//    }
+
 
     public String getCurSSID() {
         return curSSID;

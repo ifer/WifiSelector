@@ -9,6 +9,9 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
+// Brodacast Manager that runs after the end of the visual activity.
+// It gets registered and unregistered by the MainActivity (onPause and onResume events)
+// It starts the WifiForegroundService at specified intervals.
 public class WifiBackgroundUpdater extends BroadcastReceiver {
     public static final String TAG="WifiSelector";
 //    private static final TimeZone timezoneAthens = TimeZone.getTimeZone("Europe/Athens");
@@ -27,16 +30,6 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Alarm received: " + intent.getAction());
-//        wifiSelector.scanWifi();
-//        Intent serviceIntent = new Intent(context, WifiForegroundService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(new Intent(context, WifiForegroundService.class));
-        } else {
-            context.startService(new Intent(context, WifiForegroundService.class));
-        }
-
-
-        schedulePeriodicAlarm();
 
         if (intent.getAction().equals(ACTION_SCAN_WIFI)){
             Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
@@ -47,6 +40,16 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
             Log.d(TAG, "SCREEN ON: Alarm service triggers scanWifi()");
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(new Intent(context, WifiForegroundService.class));
+        } else {
+            context.startService(new Intent(context, WifiForegroundService.class));
+        }
+
+
+        schedulePeriodicAlarm();
+
     }
 
     public static void schedulePeriodicAlarm() {
