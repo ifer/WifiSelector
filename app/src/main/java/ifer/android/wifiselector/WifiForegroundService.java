@@ -32,6 +32,8 @@ public class WifiForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 Log.d(TAG, "service onStartCommand");
 
+//        GlobalApplication.registerWificanResultsReceiver();
+
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
@@ -76,6 +78,8 @@ Log.d(TAG, "service onStartCommand");
     @Override
     public void onDestroy() {
         super.onDestroy();
+//        GlobalApplication.unregisterWificanResultsReceiver();
+
         Log.d(TAG, "service onDestroy");
 
 

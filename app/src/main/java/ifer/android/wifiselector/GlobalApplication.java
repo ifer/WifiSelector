@@ -2,16 +2,22 @@ package ifer.android.wifiselector;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
 
 
 // Class used by utility classes which need to get the application context
 public class GlobalApplication extends Application {
     private static Context appContext;
+    private static WifiScanResultsReceiver wifiScanResultsReceiver;
+    private static boolean receiverRegistered = false;
 
     @Override
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
+        wifiScanResultsReceiver = new WifiScanResultsReceiver();
+
 
         /* If you has other classes that need context object to initialize when application is created,
          you can use the appContext here to process. */
@@ -19,5 +25,27 @@ public class GlobalApplication extends Application {
 
     public static Context getAppContext() {
         return appContext;
+    }
+
+    public static WifiScanResultsReceiver getWifiScanResultsReceiver() {
+        return wifiScanResultsReceiver;
+    }
+
+    public static void registerWificanResultsReceiver(){
+        if (! receiverRegistered) {
+            appContext.registerReceiver(wifiScanResultsReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            receiverRegistered = true;
+        }
+    }
+
+    public static void unregisterWificanResultsReceiver(){
+        if (receiverRegistered) {
+            appContext.unregisterReceiver(wifiScanResultsReceiver);
+            receiverRegistered = false;
+        }
+    }
+
+    public static boolean isReceiverRegistered() {
+        return receiverRegistered;
     }
 }

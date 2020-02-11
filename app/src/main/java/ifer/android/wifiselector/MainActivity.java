@@ -212,8 +212,8 @@ Log.d(TAG, "activity onResume");
                     getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
                     wifiBackgroundUpdater = null;
             }
-            if (wifiScanResultsReceiver != null) {
-                    getApplicationContext().unregisterReceiver(wifiScanResultsReceiver);
+            if (GlobalApplication.isReceiverRegistered()) {
+                    GlobalApplication.unregisterWificanResultsReceiver();
                     wifiScanResultsReceiver = null;
             }
 //            }
@@ -247,8 +247,10 @@ Log.d(TAG, "activity onPause");
 //            WifiBackgroundUpdater.scheduleAlarm();
 
             //Register receiver to receive scans made by the system
-            wifiScanResultsReceiver = new WifiScanResultsReceiver();
-            getApplicationContext().registerReceiver(wifiScanResultsReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
+            if (! GlobalApplication.isReceiverRegistered()) {
+               GlobalApplication.registerWificanResultsReceiver();
+            }
 
         }
     }
