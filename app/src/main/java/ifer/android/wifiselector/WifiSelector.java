@@ -92,7 +92,7 @@ Log.d(TAG, "scanResult.level=" + scanResult.level ) ;
         Collections.sort(wifiArrayList);
 
         Log.d(TAG, "wifiArrayList.size="+wifiArrayList.size());
-        if (UserOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
+iit         if (UserOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
             String chosenSSID = chooseWifiToConnect();
 
             if (chosenSSID != null) // SSIDs selected
