@@ -207,15 +207,15 @@ public class MainActivity extends AppCompatActivity {
 Log.d(TAG, "activity onResume");
         if (permissionGranted) {
 //            if (UserOptions.isRunInBackground()) {
-                if (wifiBackgroundUpdater != null) {
-                    WifiBackgroundUpdater.cancelPeriodicAlarm();
+            WifiBackgroundUpdater.cancelPeriodicAlarm();
+            if (wifiBackgroundUpdater != null) {
                     getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
                     wifiBackgroundUpdater = null;
-                }
-                if (wifiScanResultsReceiver != null) {
+            }
+            if (wifiScanResultsReceiver != null) {
                     getApplicationContext().unregisterReceiver(wifiScanResultsReceiver);
                     wifiScanResultsReceiver = null;
-                }
+            }
 //            }
 
 

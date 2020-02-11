@@ -23,7 +23,7 @@ public class WifiScanResultsReceiver extends BroadcastReceiver {
         List<ScanResult> results = wifiManager.getScanResults();
         context.unregisterReceiver(this);
 
-Log.d(MainActivity.TAG, "WifiScanResultsReceiver ressults: " + results.size());
+Log.d(MainActivity.TAG, "WifiScanResultsReceiver results: " + results.size());
 
         wifiSelector.processScanResults(results);
     }

@@ -58,8 +58,10 @@ Log.d(MainActivity.TAG, "scanWifi!");
             context.unregisterReceiver(this);
             processScanResults(results);
 
-            Intent serviceIntent = new Intent(context, WifiBoundService.class);
-            context.stopService(serviceIntent);
+//            Intent serviceIntent = new Intent(context, WifiBoundService.class);
+//            context.stopService(serviceIntent);
+//
+
 //Log.d(TAG, "wifiReceiver");
 //            for (ScanResult scanResult : results) {
 //                int percentage = WifiManager.calculateSignalLevel(scanResult.level, 100);
