@@ -44,7 +44,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
         WifiScanResultsReceiver wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
         if (! GlobalApplication.isReceiverRegistered()) {
-            Log.d(MainActivity.TAG, "registerWificanResultsReceiver!");
+//Log.d(MainActivity.TAG, "registering registerWificanResultsReceiver");
             GlobalApplication.registerWificanResultsReceiver();
         }
 
@@ -85,6 +85,11 @@ Log.d(MainActivity.TAG, "scanWifi!");
                 wfe.setSelected(true);
             }
 
+            // Update lastWifiConnected CURRENT signal strength so that comparison can be done in chooseWifiToConnect
+            if(lastWifiConnected != null && wfe.getSsid().equals(lastWifiConnected.getSsid())){
+                lastWifiConnected.setSignalPercentage(wfe.getSignalPercentage());
+            }
+
             wifiArrayList.add(wfe);
 
 //                scanAdapter.notifyDataSetChanged();
@@ -95,8 +100,11 @@ Log.d(MainActivity.TAG, "scanWifi!");
         if (UserOptions.isAutoConnectToStrongest() && wifiArrayList.size() > 0){
             String chosenSSID = chooseWifiToConnect();
 
-            if (chosenSSID != null) // SSIDs selected
+            if (chosenSSID != null) { // SSIDs selected
+                Log.d(TAG, "chosenSSID=" + chosenSSID);
+
                 connectToWifiSSID(context, chosenSSID);
+            }
 
 //                connectToWifiSSID(context, wifiArrayList.get(0).getSsid());
         }
@@ -127,7 +135,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
                 continue;
             }
             weChosen = we;
-Log.d(TAG, "1. weChosen=" + weChosen.getSsid());
+//Log.d(TAG, "1. weChosen=" + weChosen.getSsid());
             break;
         }
 
@@ -150,6 +158,8 @@ Log.d(TAG, "1. weChosen=" + weChosen.getSsid());
         }
         else {
             if ((weChosen.getSignalPercentage() - lastWifiConnected.getSignalPercentage()) < UserOptions.getMinSwitchDiff()){
+//String msg = String.format("chosen perc = %d, last perc = %d, minDif=%d", weChosen.getSignalPercentage(), lastWifiConnected.getSignalPercentage(), UserOptions.getMinSwitchDiff());
+//Log.d(TAG, msg );
                 return (lastWifiConnected.getSsid());
             }
             else {

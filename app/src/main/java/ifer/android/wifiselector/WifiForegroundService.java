@@ -47,7 +47,8 @@ Log.d(TAG, "service onStartCommand");
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
         {
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+            int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel notificationChannel = new NotificationChannel( MainActivity.CHANNEL_ID,
                     mContext.getString(R.string.notif_text),
                     importance);
@@ -66,7 +67,7 @@ Log.d(TAG, "service onStartCommand");
 
         wifiSelector.scanWifi();
 
-        stopSelf();
+//        stopSelf();
 
         return START_NOT_STICKY;
     }

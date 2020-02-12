@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.List;
@@ -30,7 +31,10 @@ public class WifiScanResultsReceiver extends BroadcastReceiver {
 
         GlobalApplication.unregisterWificanResultsReceiver();
 
-Log.d(MainActivity.TAG, "WifiScanResultsReceiver results: " + results.size());
+
+        context.stopService(new Intent(context, WifiForegroundService.class));
+
+//Log.d(MainActivity.TAG, "WifiScanResultsReceiver results: " + results.size());
 
         wifiSelector.processScanResults(results);
     }
