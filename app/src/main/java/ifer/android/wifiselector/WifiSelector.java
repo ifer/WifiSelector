@@ -40,7 +40,7 @@ public class WifiSelector {
     }
 
     public void scanWifi() {
-Log.d(MainActivity.TAG, "scanWifi!");
+//Log.d(MainActivity.TAG, "scanWifi!");
 
         WifiScanResultsReceiver wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
         if (! GlobalApplication.isReceiverRegistered()) {
@@ -101,7 +101,7 @@ Log.d(MainActivity.TAG, "scanWifi!");
             String chosenSSID = chooseWifiToConnect();
 
             if (chosenSSID != null) { // SSIDs selected
-                Log.d(TAG, "chosenSSID=" + chosenSSID);
+//                Log.d(TAG, "chosenSSID=" + chosenSSID);
 
                 connectToWifiSSID(context, chosenSSID);
             }
@@ -231,10 +231,10 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
 
     private void connectToWifiSSID(Context context, String ssid) {
-Log.d(TAG, "Connecting to " + ssid);
         if (curSSID != null && curSSID.equals(ssid)){
             return;
         }
+Log.d(TAG, "Connecting to " + ssid);
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         if (list == null)
             return;

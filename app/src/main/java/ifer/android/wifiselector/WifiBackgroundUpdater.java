@@ -29,17 +29,7 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "Alarm received: " + intent.getAction());
-
-        if (intent.getAction().equals(ACTION_SCAN_WIFI)){
-            Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
-        }
-        else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
-            Log.d(TAG, "ACTION_BOOT_COMPLETED: Alarm service triggers scanWifi() and reschedules");
-        }
-        else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
-            Log.d(TAG, "SCREEN ON: Alarm service triggers scanWifi()");
-        }
+//        Log.d(TAG, "Alarm received: " + intent.getAction());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(new Intent(context, WifiForegroundService.class));
@@ -47,8 +37,23 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
             context.startService(new Intent(context, WifiForegroundService.class));
         }
 
+        scheduleAlarm();
 
-        schedulePeriodicAlarm();
+        if (intent.getAction().equals(ACTION_SCAN_WIFI)){
+//            Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
+        }
+        else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+            Log.d(TAG, "ACTION_BOOT_COMPLETED: Alarm service triggers scanWifi() and reschedules");
+
+//            schedulePeriodicAlarm();
+
+        }
+        else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
+//            Log.d(TAG, "SCREEN ON: Alarm service triggers scanWifi()");
+        }
+
+
+
 
     }
 
@@ -77,7 +82,7 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
 //        PendingIntent pi=PendingIntent.getBroadcast(context, 0, i, 0);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long intervalMillis = UserOptions.getAlarmInterval() * 60 * 1000;
-        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+intervalMillis, pendingIntent);
+        alarmManager.set (AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + intervalMillis, pendingIntent);
 
     }
 

@@ -243,7 +243,8 @@ Log.d(TAG, "activity onPause");
 
         if (UserOptions.isRunInBackground()) {
             registerWifiBackgroundUpdater();
-            WifiBackgroundUpdater.schedulePeriodicAlarm();
+//            WifiBackgroundUpdater.schedulePeriodicAlarm();
+            WifiBackgroundUpdater.scheduleAlarm();
 
             //Register receiver to receive scans made by the system
 //            wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
