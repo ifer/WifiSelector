@@ -40,7 +40,13 @@ public class WifiSelector {
     }
 
     public void scanWifi() {
-//Log.d(MainActivity.TAG, "scanWifi!");
+Log.d(MainActivity.TAG, "scanWifi!");
+
+        // Scan only if the device is already connected to an access point
+        if (checkWifiOnAndConnected() == false){
+Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
+            return;
+        }
 
         WifiScanResultsReceiver wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
         if (! GlobalApplication.isReceiverRegistered()) {
@@ -49,7 +55,6 @@ public class WifiSelector {
         }
 
         wifiManager.startScan();
-
     }
 
 
@@ -101,7 +106,7 @@ public class WifiSelector {
             String chosenSSID = chooseWifiToConnect();
 
             if (chosenSSID != null) { // SSIDs selected
-//                Log.d(TAG, "chosenSSID=" + chosenSSID);
+                Log.d(TAG, "chosenSSID=" + chosenSSID);
 
                 connectToWifiSSID(context, chosenSSID);
             }
@@ -158,8 +163,8 @@ public class WifiSelector {
         }
         else {
             if ((weChosen.getSignalPercentage() - lastWifiConnected.getSignalPercentage()) < UserOptions.getMinSwitchDiff()){
-//String msg = String.format("chosen perc = %d, last perc = %d, minDif=%d", weChosen.getSignalPercentage(), lastWifiConnected.getSignalPercentage(), UserOptions.getMinSwitchDiff());
-//Log.d(TAG, msg );
+String msg = String.format("chosen perc = %d, last perc = %d, minDif=%d", weChosen.getSignalPercentage(), lastWifiConnected.getSignalPercentage(), UserOptions.getMinSwitchDiff());
+Log.d(TAG, msg );
                 return (lastWifiConnected.getSsid());
             }
             else {
@@ -261,6 +266,22 @@ Log.d(TAG, "Connecting to " + ssid);
             if (i.SSID != null ) {
                 registeredSSIDList.add(i.SSID.replaceAll("\"", ""));
             }
+        }
+    }
+
+    public boolean checkWifiOnAndConnected() {
+
+        if (wifiManager.isWifiEnabled()) { // Wi-Fi adapter is ON
+
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+
+            if( wifiInfo.getNetworkId() == -1 ){
+                return false; // Not connected to an access point
+            }
+            return true; // Connected to an access point
+        }
+        else {
+            return false; // Wi-Fi adapter is OFF
         }
     }
 

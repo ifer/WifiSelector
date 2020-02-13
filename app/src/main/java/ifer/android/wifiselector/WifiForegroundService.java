@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -23,6 +24,7 @@ public class WifiForegroundService extends Service {
     private Context mContext;
 //    private boolean boundOnly = true;
 
+    private PowerManager pm;
 
     private WifiSelector wifiSelector;
 
@@ -32,11 +34,16 @@ public class WifiForegroundService extends Service {
 //Log.d(TAG, "service onCreate");
         mContext = GlobalApplication.getAppContext();
         wifiSelector = new WifiSelector();
-
+        pm =  (PowerManager) getSystemService(Context.POWER_SERVICE);
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 Log.d(TAG, "service onStartCommand");
+
+        if(pm.isDeviceIdleMode()){
+Log.d(TAG, "Idle mode, doing nothing");
+            return START_NOT_STICKY;
+        }
 
         GlobalApplication.registerWificanResultsReceiver();
 

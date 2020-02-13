@@ -82,7 +82,7 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
 //        PendingIntent pi=PendingIntent.getBroadcast(context, 0, i, 0);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long intervalMillis = UserOptions.getAlarmInterval() * 60 * 1000;
-        alarmManager.set (AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + intervalMillis, pendingIntent);
+        alarmManager.set (AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + intervalMillis, pendingIntent);
 
     }
 
