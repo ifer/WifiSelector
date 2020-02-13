@@ -42,6 +42,7 @@ public class WifiSelector {
     public void scanWifi() {
 Log.d(MainActivity.TAG, "scanWifi!");
 
+
         // Scan only if the device is already connected to an access point
         if (checkWifiOnAndConnected() == false){
 Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");

@@ -187,6 +187,10 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 //Log.d(TAG, "activity onStart");
 
+        if (UserOptions.getSelectedSSIDs().size() == 0){
+            showToastMessage(this, getResources().getString(R.string.notif_no_ssids_selected));
+        }
+
         if (permissionGranted) {
             bindWifiBoundService();
 

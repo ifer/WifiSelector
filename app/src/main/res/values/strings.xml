@@ -23,6 +23,7 @@
     <string name="scanWifiMessage">Scanning wifi networks...</string>
     <string name="noconnection">No wifi connection</string>
     <string name="notif_text">Scanning WiFi..</string>
+    <string name="notif_no_ssids_selected">You need to select the Wifi networks you want to connect to in order for this application to work properly</string>
 
     <string name="app_about">Copywrite ifer 2020</string>
     <string name="text_about">\nWifi Selector\n\n

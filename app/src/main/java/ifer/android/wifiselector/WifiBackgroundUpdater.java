@@ -37,10 +37,11 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
             context.startService(new Intent(context, WifiForegroundService.class));
         }
 
+
         scheduleAlarm();
 
         if (intent.getAction().equals(ACTION_SCAN_WIFI)){
-//            Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
+            Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
         }
         else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
             Log.d(TAG, "ACTION_BOOT_COMPLETED: Alarm service triggers scanWifi() and reschedules");
@@ -49,7 +50,7 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
 
         }
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
-//            Log.d(TAG, "SCREEN ON: Alarm service triggers scanWifi()");
+            Log.d(TAG, "SCREEN ON: Alarm service triggers scanWifi()");
         }
 
 
