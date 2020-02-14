@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
     // Register BroadCastReceiver for background updating when app is off
     private void registerWifiBackgroundUpdater(){
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WifiBackgroundUpdater.ACTION_SCAN_WIFI);
+//        filter.addAction(WifiBackgroundUpdater.ACTION_SCAN_WIFI);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_BOOT_COMPLETED);
 
@@ -216,6 +216,8 @@ Log.d(TAG, "activity onResume");
                     getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
                     wifiBackgroundUpdater = null;
             }
+            this.stopService(new Intent(this, LocationService.class));
+
 //            if (GlobalApplication.isReceiverRegistered()) {
 //                    GlobalApplication.unregisterWificanResultsReceiver();
 //                    wifiScanResultsReceiver = null;
@@ -247,8 +249,14 @@ Log.d(TAG, "activity onPause");
 
         if (UserOptions.isRunInBackground()) {
             registerWifiBackgroundUpdater();
-//            WifiBackgroundUpdater.schedulePeriodicAlarm();
+
             WifiBackgroundUpdater.scheduleAlarm();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                this.startForegroundService(new Intent(this, LocationService.class));
+            } else {
+                this.startService(new Intent(this, LocationService.class));
+            }
 
             //Register receiver to receive scans made by the system
 //            wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();

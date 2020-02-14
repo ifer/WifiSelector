@@ -11,11 +11,14 @@ public class GlobalApplication extends Application {
     private static Context appContext;
     private static WifiScanResultsReceiver wifiScanResultsReceiver;
     private static boolean receiverRegistered = false;
+    private static WifiSelector wifiSelector;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
+        wifiSelector = new WifiSelector();
         wifiScanResultsReceiver = new WifiScanResultsReceiver();
 
 
@@ -26,6 +29,12 @@ public class GlobalApplication extends Application {
     public static Context getAppContext() {
         return appContext;
     }
+
+
+    public static WifiSelector getWifiSelector() {
+        return wifiSelector;
+    }
+
 
     public static WifiScanResultsReceiver getWifiScanResultsReceiver() {
         return wifiScanResultsReceiver;

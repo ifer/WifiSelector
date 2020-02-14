@@ -15,7 +15,7 @@ public class WifiJobService extends JobService {
 
 
     public WifiJobService() {
-        wifiSelector = new WifiSelector();
+        wifiSelector = GlobalApplication.getWifiSelector();
     }
 
     @Override

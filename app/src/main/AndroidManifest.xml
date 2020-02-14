@@ -36,6 +36,7 @@
 
         <service android:name=".WifiBoundService"></service>
         <service android:name=".WifiForegroundService"></service>
+        <service android:name=".LocationService"></service>
 
         <receiver android:name=".WifiBackgroundUpdater">
             <intent-filter>

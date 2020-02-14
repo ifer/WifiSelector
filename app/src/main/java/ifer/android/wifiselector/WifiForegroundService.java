@@ -33,7 +33,8 @@ public class WifiForegroundService extends Service {
         super.onCreate();
 //Log.d(TAG, "service onCreate");
         mContext = GlobalApplication.getAppContext();
-        wifiSelector = new WifiSelector();
+        wifiSelector = GlobalApplication.getWifiSelector();
+
         pm =  (PowerManager) getSystemService(Context.POWER_SERVICE);
     }
     @Override

@@ -20,7 +20,7 @@ public class WifiScanResultsReceiver extends BroadcastReceiver {
 
     private WifiManager wifiManager;
     private Context context;
-    private WifiSelector wifiSelector = new WifiSelector();
+    private WifiSelector wifiSelector;
 
 
     @Override
@@ -29,6 +29,7 @@ public class WifiScanResultsReceiver extends BroadcastReceiver {
         this.context = GlobalApplication.getAppContext();
         List<ScanResult> results = wifiManager.getScanResults();
 
+        wifiSelector = GlobalApplication.getWifiSelector();
         wifiSelector.processScanResults(results);
 
         GlobalApplication.unregisterWificanResultsReceiver();

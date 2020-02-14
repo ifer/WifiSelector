@@ -21,27 +21,32 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
 
     private Context context;
 
-    private WifiSelector wifiSelector = new WifiSelector();
+    private WifiSelector wifiSelector;
 
     public WifiBackgroundUpdater(){
         this.context = GlobalApplication.getAppContext();
+        wifiSelector = GlobalApplication.getWifiSelector();
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        Log.d(TAG, "Alarm received: " + intent.getAction());
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(new Intent(context, WifiForegroundService.class));
-        } else {
-            context.startService(new Intent(context, WifiForegroundService.class));
+Log.d(TAG, "Alarm received: " + intent.getAction());
+        if (intent.getAction() ==  null ){
+            return;
         }
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            context.startForegroundService(new Intent(context, WifiForegroundService.class));
+//        } else {
+//            context.startService(new Intent(context, WifiForegroundService.class));
+//        }
 
 
         scheduleAlarm();
 
         if (intent.getAction().equals(ACTION_SCAN_WIFI)){
             Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
+            wifiSelector.scanWifi();
         }
         else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
             Log.d(TAG, "ACTION_BOOT_COMPLETED: Alarm service triggers scanWifi() and reschedules");

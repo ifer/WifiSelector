@@ -49,7 +49,7 @@ public class WifiBoundService extends Service {
         super.onCreate();
 //Log.d(TAG, "service onCreate");
         mContext = GlobalApplication.getAppContext();
-        wifiSelector = new WifiSelector();
+        wifiSelector =  GlobalApplication.getWifiSelector();
 
     }
 

@@ -67,6 +67,8 @@ Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
 
         getRegisteredSSIDs();
 
+        if (lastWifiConnected != null)
+            lastWifiConnected.setSignalPercentage(0); // Set to zero for the case that it is not detected at all this time
 
         for (ScanResult scanResult : results) {
             int percentage = WifiManager.calculateSignalLevel(scanResult.level, 100);
