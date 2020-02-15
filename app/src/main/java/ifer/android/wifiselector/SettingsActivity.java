@@ -27,11 +27,13 @@ public class SettingsActivity extends AppCompatActivity {
     private RadioButton radFifteen  ;
     private RadioButton radThirty   ;
     private EditText etSwitchDiff   ;
+    private EditText etMinDistance   ;
 
     private boolean settingsChanged = false;
 
     private boolean oldRunInBackground;
     private int oldSwitchDiff;
+    private int oldMinDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity {
         radFifteen     = findViewById(R.id.intv_fifteen);
         radThirty      = findViewById(R.id.intv_thirty);
         etSwitchDiff   = findViewById(R.id.switch_diff);
-
+        etMinDistance  = findViewById(R.id.min_dist);
         loadUserOptions();
 
     }
@@ -61,7 +63,7 @@ public class SettingsActivity extends AppCompatActivity {
         chkBackgrnd.setChecked(UserOptions.isRunInBackground());
         chkAutoconnect.setChecked(UserOptions.isAutoConnectToStrongest());
         etSwitchDiff.setText(String.valueOf(UserOptions.getMinSwitchDiff()));
-
+        etMinDistance.setText(String.valueOf(UserOptions.getMinDistance()));
 
         int intv = UserOptions.getAlarmInterval();
         switch (intv){
@@ -83,6 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         oldRunInBackground = UserOptions.isRunInBackground(); //keep initial value
         oldSwitchDiff = UserOptions.getMinSwitchDiff();
+        oldMinDistance = UserOptions.getMinDistance();
     }
 
     public void onRadioButtonClicked(View view) {
@@ -147,6 +150,14 @@ public class SettingsActivity extends AppCompatActivity {
         }
         return (true);
     }
+    private boolean validateMinDistance (){
+        Integer minDist = getIntegerFromTextView(etMinDistance);
+        if (minDist == null || minDist < 0 ){
+            showToastMessage(this, getString(R.string.error_min_dist));
+            return (false);
+        }
+        return (true);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -159,7 +170,12 @@ public class SettingsActivity extends AppCompatActivity {
                 if (validateSwitchDiff() == false){
                     return true;
                 }
+                if (validateMinDistance() == false){
+                    return true;
+                }
+
                 UserOptions.setMinSwitchDiff( getIntegerFromTextView(etSwitchDiff));
+                UserOptions.setMinDistance(getIntegerFromTextView(etMinDistance));
 
                 UserOptions.save();
 
@@ -191,6 +207,9 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void cancelEdit (){
         if (! getIntegerFromTextView(etSwitchDiff).equals(oldSwitchDiff))    {
+            settingsChanged = true;
+        }
+        if (! getIntegerFromTextView(etMinDistance).equals(oldMinDistance))    {
             settingsChanged = true;
         }
 

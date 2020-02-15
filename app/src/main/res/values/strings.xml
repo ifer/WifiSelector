@@ -9,6 +9,7 @@
     <string name="option_interval">Monitoring time interval (minutes)</string>
     <string name="option_autoconnect">Automatically connect to the strongest wifi</string>
     <string name="option_switch_min_diff">Minimum percentage difference to switch wifi</string>
+    <string name="option_min_distance">Minimum displacement (meters) to begin scanning</string>
     <string-array name="options_array">
         <item>Run constantly in the background</item>
         <item>Monitoring time interval (minutes)</item>
@@ -20,6 +21,7 @@
     <string name="warn_app_will_restart">Because you changed its run mode setting, the application needs to restart. Press OK</string>
     <string name="wifi_not_enabled">WiFi is not enabled at your phone. Please enable it and start the application again</string>
     <string name="error_switch_diff">Minimum percentage difference must be an integer between 0 and 100</string>
+    <string name="error_min_dist">Minimum displacement must be an integer greater than or equal to 0</string>
     <string name="scanWifiMessage">Scanning wifi networks...</string>
     <string name="noconnection">No wifi connection</string>
     <string name="notif_text">Monitoring WiFi..</string>

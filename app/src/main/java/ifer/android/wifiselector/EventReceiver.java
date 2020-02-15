@@ -9,10 +9,11 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
-// Brodacast Manager that runs after the end of the visual activity.
+// A Broadcast Manager that runs after the end of the visual activity.
 // It gets registered and unregistered by the MainActivity (onPause and onResume events)
-// It starts the WifiForegroundService at specified intervals.
-public class WifiBackgroundUpdater extends BroadcastReceiver {
+// It receives system events and performs the appropriate tasks
+
+public class EventReceiver extends BroadcastReceiver {
     public static final String TAG="WifiSelector";
 //    private static final TimeZone timezoneAthens = TimeZone.getTimeZone("Europe/Athens");
 
@@ -23,33 +24,21 @@ public class WifiBackgroundUpdater extends BroadcastReceiver {
 
     private WifiSelector wifiSelector;
 
-    public WifiBackgroundUpdater(){
+    public EventReceiver(){
         this.context = GlobalApplication.getAppContext();
         wifiSelector = GlobalApplication.getWifiSelector();
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-Log.d(TAG, "Alarm received: " + intent.getAction());
+Log.d(TAG, "EventReceiver received: " + intent.getAction());
         if (intent.getAction() ==  null ){
             return;
         }
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            context.startForegroundService(new Intent(context, WifiForegroundService.class));
-//        } else {
-//            context.startService(new Intent(context, WifiForegroundService.class));
-//        }
 
-
-//        scheduleAlarm();
-
-        if (intent.getAction().equals(ACTION_SCAN_WIFI)){
-            Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
-            wifiSelector.scanWifi();
-        }
-        else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
-            Log.d(TAG, "ACTION_BOOT_COMPLETED: Alarm service triggers LocationService.class");
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+            Log.d(TAG, "ACTION_BOOT_COMPLETED: EventReceiver triggers LocationService.class");
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(new Intent(context, LocationService.class));
@@ -59,22 +48,35 @@ Log.d(TAG, "Alarm received: " + intent.getAction());
 
         }
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
-            Log.d(TAG, "SCREEN ON: Alarm service triggers scanWifi()");
+
+            Log.d(TAG, "SCREEN ON: EventReceiver triggers scanWifi()");
+
+            wifiSelector.scanWifi();
         }
+        else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)){
+
+            Log.d(TAG, "USER_PRESENT: EventReceiver triggers scanWifi()");
+
+            wifiSelector.scanWifi();
+
+        }
+
 
 
 
 
     }
 
+
+    //Schedules not being used
     public static void schedulePeriodicAlarm() {
         Context context = GlobalApplication.getAppContext();
         AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
 
-        Intent intent = new Intent(context, WifiBackgroundUpdater.class);
-        intent.setAction(WifiBackgroundUpdater.ACTION_SCAN_WIFI);
+        Intent intent = new Intent(context, EventReceiver.class);
+        intent.setAction(EventReceiver.ACTION_SCAN_WIFI);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, EventReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         long intervalMillis = UserOptions.getAlarmInterval() * 60 * 1000;
 
@@ -88,9 +90,9 @@ Log.d(TAG, "Alarm received: " + intent.getAction());
         AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
 
 //        int refresh_interval = interval;
-        Intent intent = new Intent(context, WifiBackgroundUpdater.class);
+        Intent intent = new Intent(context, EventReceiver.class);
 //        PendingIntent pi=PendingIntent.getBroadcast(context, 0, i, 0);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, EventReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long intervalMillis = UserOptions.getAlarmInterval() * 60 * 1000;
         alarmManager.set (AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + intervalMillis, pendingIntent);
 
@@ -101,10 +103,10 @@ Log.d(TAG, "Alarm received: " + intent.getAction());
         Context context = GlobalApplication.getAppContext();
         AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
 
-        Intent intent = new Intent(context, WifiBackgroundUpdater.class);
-        intent.setAction(WifiBackgroundUpdater.ACTION_SCAN_WIFI);
+        Intent intent = new Intent(context, EventReceiver.class);
+        intent.setAction(EventReceiver.ACTION_SCAN_WIFI);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, WifiBackgroundUpdater.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, EventReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmManager.cancel(pendingIntent);
     }

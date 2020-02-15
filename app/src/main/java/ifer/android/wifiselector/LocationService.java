@@ -39,6 +39,10 @@ import com.google.android.gms.tasks.Task;
 import java.text.DateFormat;
 import java.util.Date;
 
+// Runs as a foreground servide after the visual activity is stopped (if UserOptions.runInBackground is true)
+// The location callback receives location info if the minimum displacement of the mobile is UserOptions.minDistance meters.
+// When location info is received, as wifi scan is perforrmed
+
 public class LocationService extends Service {
     public static final String TAG="WifiSelector";
 
@@ -64,9 +68,6 @@ public class LocationService extends Service {
     private Location mCurrentLocation;
     private Location mLastLocation;
 
-    // boolean flag to toggle the ui
-    private Boolean mRequestingLocationUpdates;
-
 
     private WifiSelector wifiSelector;
 
@@ -83,6 +84,8 @@ public class LocationService extends Service {
     }
 
     private void init() {
+        UserOptions.load();
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mSettingsClient = LocationServices.getSettingsClient(this);
 
@@ -109,13 +112,12 @@ Log.d(TAG, "Distance=" + String.valueOf(result[0]));
             }
         };
 
-        mRequestingLocationUpdates = false;
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE);
+        mLocationRequest.setSmallestDisplacement(UserOptions.getMinDistance());
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
@@ -128,7 +130,6 @@ Log.d(TAG, "Distance=" + String.valueOf(result[0]));
      * location updates will be requested
      */
     private void startLocationUpdates() {
-        mRequestingLocationUpdates = true;
 
         mSettingsClient
                 .checkLocationSettings(mLocationSettingsRequest)
@@ -170,7 +171,6 @@ Log.d(TAG, "Started location updates!");
     }
 
     public void stopLocationUpdates() {
-        mRequestingLocationUpdates = false;
 
         // Removing location updates
         mFusedLocationClient

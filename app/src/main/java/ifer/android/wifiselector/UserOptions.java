@@ -14,12 +14,14 @@ public class UserOptions implements Serializable {
     public static final String OPTION_INTERVAL = "opt_interval";
     public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
     public static final String OPTION_SWITCH_DIFF = "opt_switchdiff";
+    public static final String OPTION_MIN_DISTANCE = "opt_mindist";
 
 
     private static boolean runInBackground = true;
     private static int alarmInterval = 2; //minutes
     private static boolean autoConnectToStrongest = true;
     private static int minSwitchDiff = 10;
+    private static int minDistance = 10;
     private static HashSet<String> selectedSSIDs = new HashSet<String>();
 
     private static SharedPreferences settings;
@@ -36,6 +38,7 @@ public class UserOptions implements Serializable {
         editor.putInt(OPTION_INTERVAL, getAlarmInterval());
         editor.putBoolean(OPTION_AUTOCONNECT, isAutoConnectToStrongest());
         editor.putInt(OPTION_SWITCH_DIFF, getMinSwitchDiff());
+        editor.putInt(OPTION_MIN_DISTANCE, getMinDistance());
 
         HashSet<String> selectedSSIDs = new HashSet<String>();
         selectedSSIDs.addAll(getSelectedSSIDs());
@@ -51,6 +54,7 @@ public class UserOptions implements Serializable {
         setAutoConnectToStrongest(settings.getBoolean(OPTION_AUTOCONNECT, true));
         setRunInBackground(settings.getBoolean(OPTION_BACKGRND, true));
         setMinSwitchDiff(settings.getInt(OPTION_SWITCH_DIFF, 10));
+        setMinDistance(settings.getInt(OPTION_MIN_DISTANCE, 10));
 
         HashSet<String> def = new HashSet<String>(); //default values: empty
         HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);
@@ -98,5 +102,13 @@ public class UserOptions implements Serializable {
 
     public static void setSelectedSSIDs(HashSet<String> selectedSSIDs) {
         UserOptions.selectedSSIDs = selectedSSIDs;
+    }
+
+    public static int getMinDistance() {
+        return minDistance;
+    }
+
+    public static void setMinDistance(int minDistance) {
+        UserOptions.minDistance = minDistance;
     }
 }

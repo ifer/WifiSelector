@@ -33,7 +33,6 @@ public class WifiScanResultsReceiver extends BroadcastReceiver {
         wifiSelector.processScanResults(results);
 
         GlobalApplication.unregisterWificanResultsReceiver();
-        context.stopService(new Intent(context, WifiForegroundService.class));
 
 Log.d(MainActivity.TAG, "WifiScanResultsReceiver results: " + results.size());
 

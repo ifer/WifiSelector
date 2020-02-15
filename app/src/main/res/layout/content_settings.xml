@@ -140,4 +140,33 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/form_horizontal_padding"
+        android:paddingRight="@dimen/form_horizontal_padding"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/form_horizontal_margin"
+            android:layout_weight="0.8"
+            android:gravity="left"
+            android:scrollHorizontally="false"
+            android:singleLine="false"
+            android:text="@string/option_min_distance"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/min_dist"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:inputType="number" />
+
+    </LinearLayout>
+
 </LinearLayout>

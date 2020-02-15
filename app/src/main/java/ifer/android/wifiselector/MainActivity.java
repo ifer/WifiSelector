@@ -1,9 +1,6 @@
 package ifer.android.wifiselector;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.app.job.JobInfo;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,7 +14,6 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -63,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private HashSet<String> selectedSSIDs;
 
 //    private static JobScheduler jobScheduler;
-    private WifiBackgroundUpdater wifiBackgroundUpdater;
+    private EventReceiver eventReceiver;
     private WifiBoundService wifiBoundService;
     public UpdateReceiver updateReceiver;
 //    private WifiScanResultsReceiver wifiScanResultsReceiver;
@@ -149,14 +145,15 @@ public class MainActivity extends AppCompatActivity {
     };
 
     // Register BroadCastReceiver for background updating when app is off
-    private void registerWifiBackgroundUpdater(){
+    private void registerEventReceiver (){
         IntentFilter filter = new IntentFilter();
-//        filter.addAction(WifiBackgroundUpdater.ACTION_SCAN_WIFI);
+//        filter.addAction(EventReceiver.ACTION_SCAN_WIFI);
         filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.addAction(Intent.ACTION_BOOT_COMPLETED);
 
-        wifiBackgroundUpdater = new WifiBackgroundUpdater();
-        getApplicationContext().registerReceiver(wifiBackgroundUpdater, filter);
+        eventReceiver = new EventReceiver();
+        getApplicationContext().registerReceiver(eventReceiver, filter);
     }
 
 
@@ -199,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //OnResume event:
-    // Cancel background jobs and unregister the WifiBackgroundUpdater.
+    // Cancel background jobs and unregister the EventReceiver.
     // Create the UpdateReceiver (if not already created).
     // Then register  the receiver for that it receives messages:
     // - From WifiBoundService that data have been refreshed
@@ -211,10 +208,10 @@ public class MainActivity extends AppCompatActivity {
 Log.d(TAG, "activity onResume");
         if (permissionGranted) {
 //            if (UserOptions.isRunInBackground()) {
-            WifiBackgroundUpdater.cancelPeriodicAlarm();
-            if (wifiBackgroundUpdater != null) {
-                    getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
-                    wifiBackgroundUpdater = null;
+//            EventReceiver.cancelPeriodicAlarm();
+            if (eventReceiver != null) {
+                    getApplicationContext().unregisterReceiver(eventReceiver);
+                    eventReceiver = null;
             }
             this.stopService(new Intent(this, LocationService.class));
 
@@ -238,7 +235,7 @@ Log.d(TAG, "activity onResume");
 
     // OnPause event:
     // Unregister the updateReceiver
-    // Register the WifiBackgroundUpdater and schedule its jobs
+    // Register the EventReceiver and schedule its jobs
     @Override
     protected void onPause(){
         super.onPause();
@@ -248,9 +245,9 @@ Log.d(TAG, "activity onPause");
         }
 
         if (UserOptions.isRunInBackground()) {
-            registerWifiBackgroundUpdater();
+            registerEventReceiver();
 
-//            WifiBackgroundUpdater.scheduleAlarm();
+//            EventReceiver.scheduleAlarm();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 this.startForegroundService(new Intent(this, LocationService.class));
@@ -295,28 +292,6 @@ Log.d(TAG, "activity onStop");
 
 
 
-//    //Schedule the periodic job which runs when app is off
-//    public static void schedulePeriodicJob(){
-////Log.d(TAG, "Scheduling for every " + UserOptions.getAlarmInterval() + " min");
-//
-//        Context appContext = GlobalApplication.getAppContext();
-//
-//        ComponentName componentName = new ComponentName(appContext, WifiJobService.class);
-//        long timePeriodMillisMin = UserOptions.getAlarmInterval() * 50 * 1000;
-//        long timePeriodMillisMax = UserOptions.getAlarmInterval() * 70 * 1000;
-//
-//        //.setPeriodic does not work for intervals < 15min and android >= Android N
-//        JobInfo jobinfo = new JobInfo.Builder(JOBID, componentName)
-////                                    .setPeriodic(timePeriodMillis)
-//                                    .setMinimumLatency(timePeriodMillisMin)
-//                                    .setOverrideDeadline(timePeriodMillisMax)
-//                                    .setPersisted(true)
-//                                    .build();
-//        jobScheduler.schedule(jobinfo);
-//    }
-
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -357,10 +332,10 @@ Log.d(TAG, "activity onStop");
         }
         if (runInBackgroundChanged && UserOptions.isRunInBackground() == false){
 Log.d(TAG, "Option changed, cancel backgroun updates");
-            if (wifiBackgroundUpdater != null) {
-                WifiBackgroundUpdater.cancelPeriodicAlarm();
-                getApplicationContext().unregisterReceiver(wifiBackgroundUpdater);
-                wifiBackgroundUpdater = null;
+            if (eventReceiver != null) {
+//                EventReceiver.cancelPeriodicAlarm();
+                getApplicationContext().unregisterReceiver(eventReceiver);
+                eventReceiver = null;
             }
 
         }
