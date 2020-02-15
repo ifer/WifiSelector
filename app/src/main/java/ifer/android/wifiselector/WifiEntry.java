@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class WifiEntry implements Comparable, Serializable {
     private String ssid;
-    private String signalLevel;
+    private Integer signalLevel;
     private String signalLabel;
     private int signalPercentage;
     private boolean selected = false;
@@ -20,11 +20,11 @@ public class WifiEntry implements Comparable, Serializable {
         this.ssid = ssid;
     }
 
-    public String getSignalLevel() {
+    public Integer getSignalLevel() {
         return signalLevel;
     }
 
-    public void setSignalLevel(String signalLevel) {
+    public void setSignalLevel(Integer signalLevel) {
         this.signalLevel = signalLevel;
     }
 

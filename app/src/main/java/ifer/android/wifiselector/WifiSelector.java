@@ -20,6 +20,8 @@ import java.util.List;
 public class WifiSelector {
     private static String TAG = "WifiSelector";
 
+    private final int MIN_WIFI_LEVEL = -80; //dBm
+
     private WifiManager wifiManager;
     private String curSSID;
     private List<ScanResult> results;
@@ -72,8 +74,10 @@ Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
 
         for (ScanResult scanResult : results) {
             int percentage = WifiManager.calculateSignalLevel(scanResult.level, 100);
-//Log.d(TAG, "scanResult.level=" + scanResult.level ) ;
-//                int percentage = (int) ((level / 10.0) * 100);
+
+//String connectable = (scanResult.level < MIN_WIFI_LEVEL) ? "Not connectable" : "Connectable";
+//Log.d(TAG, "scanResult.level=" + scanResult.level  + ", percentage=" + percentage + " " + connectable) ;
+
 
             WifiEntry wfe = new WifiEntry();
 
@@ -81,7 +85,7 @@ Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
                 scanResult.SSID = "<SSID undefined>";
             }
             wfe.setSsid(scanResult.SSID);
-            wfe.setSignalLevel(String.valueOf(scanResult.level));
+            wfe.setSignalLevel(scanResult.level);
             wfe.setSignalPercentage(percentage);
             wfe.setSignalLabel(String.valueOf(percentage) + "%");
 
@@ -147,6 +151,11 @@ Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
             break;
         }
 
+        // Do not try to connect to a too weak signal
+        if (weChosen.getSignalLevel() < MIN_WIFI_LEVEL){
+            return (null);
+        }
+
         // 1st time use: there are no selected wifis to connect
         if (weChosen == null){
             return null;
@@ -166,8 +175,8 @@ Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
         }
         else {
             if ((weChosen.getSignalPercentage() - lastWifiConnected.getSignalPercentage()) < UserOptions.getMinSwitchDiff()){
-String msg = String.format("chosen perc = %d, last perc = %d, minDif=%d", weChosen.getSignalPercentage(), lastWifiConnected.getSignalPercentage(), UserOptions.getMinSwitchDiff());
-Log.d(TAG, msg );
+//String msg = String.format("chosen perc = %d, last perc = %d, minDif=%d", weChosen.getSignalPercentage(), lastWifiConnected.getSignalPercentage(), UserOptions.getMinSwitchDiff());
+//Log.d(TAG, msg );
                 return (lastWifiConnected.getSsid());
             }
             else {

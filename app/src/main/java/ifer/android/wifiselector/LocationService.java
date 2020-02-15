@@ -42,6 +42,7 @@ import java.util.Date;
 public class LocationService extends Service {
     public static final String TAG="WifiSelector";
 
+    private static final float MIN_DISTANCE = 8F;
 
     // location updates interval - 10sec
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
@@ -114,7 +115,7 @@ Log.d(TAG, "Distance=" + String.valueOf(result[0]));
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setSmallestDisplacement(12F);
+        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
@@ -214,45 +215,46 @@ Log.d(TAG, "LocationService onStartCommand");
     }
 
 
-//    private Notification getNotification(){
-//        Intent notificationIntent = new Intent(this, MainActivity.class);
-//        PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
-//
-//        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-//        {
-//
-//            int importance = NotificationManager.IMPORTANCE_LOW;
-//            NotificationChannel notificationChannel = new NotificationChannel( MainActivity.CHANNEL_ID,
-//                    mContext.getString(R.string.notif_text),
-//                    importance);
-////            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
-//            mNotificationManager.createNotificationChannel(notificationChannel);
-//        }
-//
-//        Notification notification = new NotificationCompat.Builder(mContext, MainActivity.CHANNEL_ID)
+    private Notification getNotification(){
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+
+            int importance = NotificationManager.IMPORTANCE_MIN;
+            NotificationChannel notificationChannel = new NotificationChannel( MainActivity.CHANNEL_ID,
+                    mContext.getString(R.string.notif_text),
+                    importance);
+//            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        Notification notification = new NotificationCompat.Builder(mContext, MainActivity.CHANNEL_ID)
 //                .setSmallIcon(R.mipmap.ic_wifisel)
-//                .setAutoCancel(true)
-//                .setContentTitle(mContext.getResources().getString(R.string.app_name))
-//                .setContentText(mContext.getResources().getString(R.string.notif_text))
-//                .setContentIntent(pendingIntent)
-//                .build();
-//
-//        return (notification);
-//
-//    }
+                .setSmallIcon(R.drawable.wifi_sel_white)
+                .setAutoCancel(true)
+                .setContentTitle(mContext.getResources().getString(R.string.app_name))
+                .setContentText(mContext.getResources().getString(R.string.notif_text))
+                .setContentIntent(pendingIntent)
+                .build();
 
-    private Notification getNotification() {
+        return (notification);
 
-        NotificationChannel channel = new NotificationChannel("channel_01", "My Channel", NotificationManager.IMPORTANCE_DEFAULT);
-
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
-
-        Notification.Builder builder = new Notification.Builder(getApplicationContext(), "channel_01").setAutoCancel(true);
-        return builder.build();
     }
+
+//    private Notification getNotification() {
+//
+//        NotificationChannel channel = new NotificationChannel("channel_01", "My Channel", NotificationManager.IMPORTANCE_MIN);
+//
+//        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//        notificationManager.createNotificationChannel(channel);
+//
+//        Notification.Builder builder = new Notification.Builder(getApplicationContext(), "channel_01").setAutoCancel(true);
+//        return builder.build();
+//    }
 
 
 }
