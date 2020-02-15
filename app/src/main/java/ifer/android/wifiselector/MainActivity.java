@@ -250,7 +250,7 @@ Log.d(TAG, "activity onPause");
         if (UserOptions.isRunInBackground()) {
             registerWifiBackgroundUpdater();
 
-            WifiBackgroundUpdater.scheduleAlarm();
+//            WifiBackgroundUpdater.scheduleAlarm();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 this.startForegroundService(new Intent(this, LocationService.class));

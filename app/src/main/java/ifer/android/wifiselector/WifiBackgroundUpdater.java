@@ -42,16 +42,20 @@ Log.d(TAG, "Alarm received: " + intent.getAction());
 //        }
 
 
-        scheduleAlarm();
+//        scheduleAlarm();
 
         if (intent.getAction().equals(ACTION_SCAN_WIFI)){
             Log.d(TAG, "ACTION_SCAN_WIFI: Alarm service triggers scanWifi()");
             wifiSelector.scanWifi();
         }
         else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
-            Log.d(TAG, "ACTION_BOOT_COMPLETED: Alarm service triggers scanWifi() and reschedules");
+            Log.d(TAG, "ACTION_BOOT_COMPLETED: Alarm service triggers LocationService.class");
 
-//            schedulePeriodicAlarm();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(new Intent(context, LocationService.class));
+            } else {
+                context.startService(new Intent(context, LocationService.class));
+            }
 
         }
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
