@@ -84,6 +84,7 @@ Log.d(TAG, "Bound service triggers scanWifi()");
     }
 
 
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

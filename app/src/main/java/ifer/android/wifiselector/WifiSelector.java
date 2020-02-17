@@ -281,6 +281,8 @@ Log.d(TAG, "Connecting to " + ssid);
         }
     }
 
+
+
     public boolean checkWifiOnAndConnected() {
 
         if (wifiManager.isWifiEnabled()) { // Wi-Fi adapter is ON

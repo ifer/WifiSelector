@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     wifiBoundService.scanWifi();
                 }
 
+
             }
         });
 
@@ -114,14 +115,20 @@ public class MainActivity extends AppCompatActivity {
 
         UserOptions.load();
 
-        //Check if wifi is enabled
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (!wifiManager.isWifiEnabled()) {
-           showPopupInfo(this, getString(R.string.wifi_not_enabled),  new FinishPosAction());
-        }
+        //Check if wifi and location services are enabled
+//        if (! isWifiEnabled()) {
+//           showPopupInfo(this, getString(R.string.wifi_not_enabled),  new FinishPosAction());
+//        }
+//        if (! isWifiEnabled() || ! LocationService.isLocationEnabled()) {
+//            showPopupInfo(this, getString(R.string.wifi_not_enabled),  new FinishPosAction());
+//        }
 
     }
 
+    public  boolean isWifiEnabled() {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        return (wifiManager.isWifiEnabled());
+    }
 
     // Class representing WifiBoundService through Binding
     public ServiceConnection boundServiceConnection = new ServiceConnection() {
@@ -207,6 +214,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 Log.d(TAG, "activity onResume");
         if (permissionGranted) {
+            //Check if wifi is enabled
+            if (! isWifiEnabled() || ! LocationService.isLocationEnabled()) {
+                showPopupInfo(this, getString(R.string.notif_wifi_or_location_not_enabled),  new FinishPosAction());
+            }
+
 //            if (UserOptions.isRunInBackground()) {
 //            EventReceiver.cancelPeriodicAlarm();
             if (eventReceiver != null) {
@@ -245,6 +257,10 @@ Log.d(TAG, "activity onPause");
         }
 
         if (UserOptions.isRunInBackground()) {
+//            if (LocationService.isLocationEnabled() == false){
+//                showToastMessage(this, getResources().getString(R.string.notif_wifi_or_location_not_enabled));
+//                return;
+//            }
             registerEventReceiver();
 
 //            EventReceiver.scheduleAlarm();
@@ -321,8 +337,6 @@ Log.d(TAG, "activity onStop");
         return super.onOptionsItemSelected(item);
     }
 
-    // If user changed the option "run as a background service,
-    // we need to restart the application so that WifiBoundService starts properly
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean runInBackgroundChanged = false;

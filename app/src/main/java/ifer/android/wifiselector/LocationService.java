@@ -11,9 +11,11 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -256,5 +258,19 @@ Log.d(TAG, "LocationService onStartCommand");
 //        return builder.build();
 //    }
 
+
+    public static boolean isLocationEnabled() {
+        Context context = GlobalApplication.getAppContext();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+// This is new method provided in API 28
+            LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            return lm.isLocationEnabled();
+        } else {
+// This is Deprecated in API 28
+            int mode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE,
+                    Settings.Secure.LOCATION_MODE_OFF);
+            return  (mode != Settings.Secure.LOCATION_MODE_OFF);
+        }
+    }
 
 }

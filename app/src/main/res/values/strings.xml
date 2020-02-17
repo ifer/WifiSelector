@@ -26,6 +26,7 @@
     <string name="noconnection">No wifi connection</string>
     <string name="notif_text">Monitoring WiFi..</string>
     <string name="notif_no_ssids_selected">You need to select the Wifi networks you want to connect to in order for this application to work properly</string>
+    <string name="notif_wifi_or_location_not_enabled">Either WiFi or location services are not enable on this device. WifiSelector needs both enabled to work properly</string>
 
     <string name="app_about">Copywrite ifer 2020</string>
     <string name="text_about">\nWifi Selector\n\n
