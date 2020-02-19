@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 
+import com.bugfender.sdk.Bugfender;
+
 
 // Class used by utility classes which need to get the application context
 public class GlobalApplication extends Application {
@@ -21,9 +23,11 @@ public class GlobalApplication extends Application {
         wifiSelector = new WifiSelector();
         wifiScanResultsReceiver = new WifiScanResultsReceiver();
 
+        Bugfender.init(this, "24ro9krZG86j2R5xtX9kEgbktm0zyBpW", BuildConfig.DEBUG);
+        Bugfender.enableCrashReporting();
+        Bugfender.enableUIEventLogging(this);
+        Bugfender.enableLogcatLogging(); // optional, if you want logs automatically collected from logcat
 
-        /* If you has other classes that need context object to initialize when application is created,
-         you can use the appContext here to process. */
     }
 
     public static Context getAppContext() {

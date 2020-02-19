@@ -151,15 +151,17 @@ Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
             break;
         }
 
+        if (weChosen == null){
+            return null;
+        }
+
+
         // Do not try to connect to a too weak signal
         if (weChosen.getSignalLevel() < MIN_WIFI_LEVEL){
             return (null);
         }
 
         // 1st time use: there are no selected wifis to connect
-        if (weChosen == null){
-            return null;
-        }
 
 
         if (lastWifiConnected == null ||
