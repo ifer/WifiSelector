@@ -8,11 +8,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
@@ -20,10 +18,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -38,12 +34,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import java.text.DateFormat;
-import java.util.Date;
-
-// Runs as a foreground servide after the visual activity is stopped (if UserOptions.runInBackground is true)
+// Runs as a foreground service after the visual activity is stopped (if UserOptions.runInBackground is true)
 // The location callback receives location info if the minimum displacement of the mobile is UserOptions.minDistance meters.
-// When location info is received, as wifi scan is perforrmed
+// When location info is received, a wifi scan is perforrmed
 
 public class LocationService extends Service {
     public static final String TAG="WifiSelector";

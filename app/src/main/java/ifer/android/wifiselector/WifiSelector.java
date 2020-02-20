@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// Class that manages all wifi stuff
 public class WifiSelector {
     private static String TAG = "WifiSelector";
 

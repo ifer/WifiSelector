@@ -91,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        jobScheduler = (JobScheduler) this.getSystemService(JOB_SCHEDULER_SERVICE);
-
         settings = getApplicationContext().getSharedPreferences(UserOptions.SETTINGS_NAME, 0);
 
 
@@ -100,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.wifiList);
 
-//        wifiScanResultsReceiver = null;
 
         requestPermissionForLocation();
 
@@ -115,13 +112,6 @@ public class MainActivity extends AppCompatActivity {
 
         UserOptions.load();
 
-        //Check if wifi and location services are enabled
-//        if (! isWifiEnabled()) {
-//           showPopupInfo(this, getString(R.string.wifi_not_enabled),  new FinishPosAction());
-//        }
-//        if (! isWifiEnabled() || ! LocationService.isLocationEnabled()) {
-//            showPopupInfo(this, getString(R.string.wifi_not_enabled),  new FinishPosAction());
-//        }
 
     }
 
@@ -139,9 +129,9 @@ public class MainActivity extends AppCompatActivity {
 
             // If bound-only, perform an immediate scan, because of a strange behaviour
             // when switching from runInTheBackground to bound-only
-            if (serviceBound ){
-                wifiBoundService.scanWifi();
-            }
+//            if (serviceBound ){
+//                wifiBoundService.scanWifi();
+//            }
 
         }
 
@@ -151,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    // Register BroadCastReceiver for background updating when app is off
+    // Register BroadCastReceiver for events updating when app is off
     private void registerEventReceiver (){
         IntentFilter filter = new IntentFilter();
 //        filter.addAction(EventReceiver.ACTION_SCAN_WIFI);
@@ -165,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // Bind WifiBoundService so that the activity can communicate with it.
-    // If the service is not started as a background service as well,
+    // If the service is not started as a background service as well (i.e. LocationService not started),
     // binding terminates along with the app, and the service stops working
     private void bindWifiBoundService(){
         Intent intent = new Intent(this, WifiBoundService.class);
@@ -202,10 +192,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //OnResume event:
-    // Cancel background jobs and unregister the EventReceiver.
+    //OnResume event (app in foreground):
+    // Stop LocationService and unregister the EventReceiver.
     // Create the UpdateReceiver (if not already created).
-    // Then register  the receiver for that it receives messages:
+    // Then register  the receiver so that it receives messages:
     // - From WifiBoundService that data have been refreshed
     // - From ScanAdapter that the list of selected WiFis is changed
 
@@ -219,19 +209,11 @@ Log.d(TAG, "activity onResume");
                 showPopupInfo(this, getString(R.string.notif_wifi_or_location_not_enabled),  new FinishPosAction());
             }
 
-//            if (UserOptions.isRunInBackground()) {
-//            EventReceiver.cancelPeriodicAlarm();
             if (eventReceiver != null) {
                     getApplicationContext().unregisterReceiver(eventReceiver);
                     eventReceiver = null;
             }
             this.stopService(new Intent(this, LocationService.class));
-
-//            if (GlobalApplication.isReceiverRegistered()) {
-//                    GlobalApplication.unregisterWificanResultsReceiver();
-//                    wifiScanResultsReceiver = null;
-//            }
-//            }
 
 
             if (updateReceiver == null) {
@@ -245,9 +227,11 @@ Log.d(TAG, "activity onResume");
     }
 
 
-    // OnPause event:
+    // OnPause event: (app goes to background)
     // Unregister the updateReceiver
-    // Register the EventReceiver and schedule its jobs
+    // If UserOptions.isRunInBackground():
+    //  - Register the EventReceiver
+    //  - Start the LocationService
     @Override
     protected void onPause(){
         super.onPause();
@@ -257,25 +241,15 @@ Log.d(TAG, "activity onPause");
         }
 
         if (UserOptions.isRunInBackground()) {
-//            if (LocationService.isLocationEnabled() == false){
-//                showToastMessage(this, getResources().getString(R.string.notif_wifi_or_location_not_enabled));
-//                return;
-//            }
+
             registerEventReceiver();
 
-//            EventReceiver.scheduleAlarm();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 this.startForegroundService(new Intent(this, LocationService.class));
             } else {
                 this.startService(new Intent(this, LocationService.class));
             }
-
-            //Register receiver to receive scans made by the system
-//            wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
-//            if (! GlobalApplication.isReceiverRegistered()) {
-//               GlobalApplication.registerWificanResultsReceiver();
-//            }
 
         }
     }
@@ -345,7 +319,7 @@ Log.d(TAG, "activity onStop");
             runInBackgroundChanged = data.getBooleanExtra("runInBackgroundChanged", false);
         }
         if (runInBackgroundChanged && UserOptions.isRunInBackground() == false){
-Log.d(TAG, "Option changed, cancel backgroun updates");
+//Log.d(TAG, "Option changed, cancel backgroun updates");
             if (eventReceiver != null) {
 //                EventReceiver.cancelPeriodicAlarm();
                 getApplicationContext().unregisterReceiver(eventReceiver);
