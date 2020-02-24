@@ -20,9 +20,14 @@ public class EventReceiver extends BroadcastReceiver {
     public static final int REQUEST_CODE = 123456;
     public static final String ACTION_SCAN_WIFI = "scan_wifi";
 
+    public static final String ACTION_STOP_LOCATION = "stop_location";
+    public static final int MAX_UNCONNECTED_TIME = 2;  //minutes
+
     private Context context;
 
     private WifiSelector wifiSelector;
+
+    private  boolean unconnectedAlarmScheduled = false;
 
     public EventReceiver(){
         this.context = GlobalApplication.getAppContext();
@@ -58,6 +63,13 @@ Log.d(TAG, "EventReceiver received: " + intent.getAction());
             Log.d(TAG, "USER_PRESENT: EventReceiver triggers scanWifi()");
 
             wifiSelector.scanWifi();
+
+        }
+        else if (intent.getAction().equals(ACTION_STOP_LOCATION)){
+
+            Log.d(TAG, "ACTION_STOP_LOCATION: EventReceiver stops LocationService");
+
+            context.stopService(new Intent(context, LocationService.class));
 
         }
 
@@ -109,5 +121,42 @@ Log.d(TAG, "EventReceiver received: " + intent.getAction());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, EventReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmManager.cancel(pendingIntent);
+    }
+
+    public void scheduleUnconnectedAlarm() {
+        Context context = GlobalApplication.getAppContext();
+        AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+
+//        int refresh_interval = interval;
+        Intent intent = new Intent(context, EventReceiver.class);
+        intent.setAction(ACTION_STOP_LOCATION);
+
+//        PendingIntent pi=PendingIntent.getBroadcast(context, 0, i, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, EventReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long intervalMillis = MAX_UNCONNECTED_TIME * 60 * 1000;
+        alarmManager.set (AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + intervalMillis, pendingIntent);
+
+        unconnectedAlarmScheduled = true;
+    }
+
+    public void cancelUnconnectedAlarm() {
+Log.d(TAG, "Cancelling Unconnected alarm..");
+        Context context = GlobalApplication.getAppContext();
+        AlarmManager alarmManager= (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+
+//        int refresh_interval = interval;
+        Intent intent = new Intent(context, EventReceiver.class);
+        intent.setAction(ACTION_STOP_LOCATION);
+
+//        PendingIntent pi=PendingIntent.getBroadcast(context, 0, i, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, EventReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        alarmManager.cancel(pendingIntent);
+
+        unconnectedAlarmScheduled = false;
+    }
+
+    public boolean isUnconnectedAlarmScheduled() {
+        return unconnectedAlarmScheduled;
     }
 }

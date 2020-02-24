@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
         UserOptions.load();
 
-
+//        eventReceiver = GlobalApplication.getEventReceiver();
     }
 
     public  boolean isWifiEnabled() {
@@ -141,17 +141,17 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    // Register BroadCastReceiver for events updating when app is off
-    private void registerEventReceiver (){
-        IntentFilter filter = new IntentFilter();
-//        filter.addAction(EventReceiver.ACTION_SCAN_WIFI);
-        filter.addAction(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_USER_PRESENT);
-        filter.addAction(Intent.ACTION_BOOT_COMPLETED);
-
-        eventReceiver = new EventReceiver();
-        getApplicationContext().registerReceiver(eventReceiver, filter);
-    }
+//    // Register BroadCastReceiver for events updating when app is off
+//    private void registerEventReceiver (){
+//        IntentFilter filter = new IntentFilter();
+////        filter.addAction(EventReceiver.ACTION_SCAN_WIFI);
+//        filter.addAction(Intent.ACTION_SCREEN_ON);
+//        filter.addAction(Intent.ACTION_USER_PRESENT);
+//        filter.addAction(Intent.ACTION_BOOT_COMPLETED);
+//
+//        eventReceiver = new EventReceiver();
+//        getApplicationContext().registerReceiver(eventReceiver, filter);
+//    }
 
 
     // Bind WifiBoundService so that the activity can communicate with it.
@@ -209,10 +209,10 @@ Log.d(TAG, "activity onResume");
                 showPopupInfo(this, getString(R.string.notif_wifi_or_location_not_enabled),  new FinishPosAction());
             }
 
-            if (eventReceiver != null) {
-                    getApplicationContext().unregisterReceiver(eventReceiver);
-                    eventReceiver = null;
+            if (GlobalApplication.isEnentReceiverRegistered()) {
+                GlobalApplication.unregisterEventReceiver();
             }
+
             this.stopService(new Intent(this, LocationService.class));
 
 
@@ -241,8 +241,7 @@ Log.d(TAG, "activity onPause");
         }
 
         if (UserOptions.isRunInBackground()) {
-
-            registerEventReceiver();
+            GlobalApplication.registerEventReceiver();
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -320,10 +319,8 @@ Log.d(TAG, "activity onStop");
         }
         if (runInBackgroundChanged && UserOptions.isRunInBackground() == false){
 //Log.d(TAG, "Option changed, cancel backgroun updates");
-            if (eventReceiver != null) {
-//                EventReceiver.cancelPeriodicAlarm();
-                getApplicationContext().unregisterReceiver(eventReceiver);
-                eventReceiver = null;
+            if (GlobalApplication.isEnentReceiverRegistered()) {
+                GlobalApplication.unregisterEventReceiver();
             }
 
         }

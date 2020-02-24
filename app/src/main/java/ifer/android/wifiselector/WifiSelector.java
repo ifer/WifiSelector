@@ -1,6 +1,5 @@
 package ifer.android.wifiselector;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -30,6 +29,7 @@ public class WifiSelector {
     private ArrayList<String> registeredSSIDList = new ArrayList<String>();
     private WifiEntry lastWifiConnected;
     private SharedPreferences settings;
+    private EventReceiver eventReceiver;
 
     private Context context;
 
@@ -40,20 +40,30 @@ public class WifiSelector {
 
         UserOptions.load();
 
+
     }
 
     public void scanWifi() {
 Log.d(MainActivity.TAG, "scanWifi!");
+        eventReceiver = GlobalApplication.getEventReceiver();
 
 
         // Scan only if the device is already connected to an access point
         if (checkWifiOnAndConnected() == false){
 Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
+            if (! eventReceiver.isUnconnectedAlarmScheduled()){
+                eventReceiver.scheduleUnconnectedAlarm();
+            }
             return;
+        }
+        else {
+            if (eventReceiver.isUnconnectedAlarmScheduled()){
+                eventReceiver.cancelUnconnectedAlarm();
+            }
         }
 
         WifiScanResultsReceiver wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
-        if (! GlobalApplication.isReceiverRegistered()) {
+        if (! GlobalApplication.isResultsReceiverRegistered()) {
 //Log.d(MainActivity.TAG, "registering registerWificanResultsReceiver");
             GlobalApplication.registerWificanResultsReceiver();
         }
