@@ -3,8 +3,6 @@ package ifer.android.wifiselector;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,7 +15,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import static ifer.android.wifiselector.AndroidUtils.*;
 
@@ -45,6 +42,7 @@ public class SettingsActivity extends AppCompatActivity {
     private int oldMinDistance;
     private boolean oldStopBackground;
     private int oldStopThreshold;
+    private int oldAlarmInterval;
 //    private String[] intervals;
 
     @Override
@@ -58,11 +56,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         chkBackgrnd    = findViewById(R.id.checkbox_backgrnd);
         chkAutoconnect = findViewById(R.id.checkbox_autoconnect);
-//        radOne         = findViewById(R.id.intv_one);
-//        radTwo         = findViewById(R.id.intv_two);
-//        radFive        = findViewById(R.id.intv_five);
-//        radFifteen     = findViewById(R.id.intv_fifteen);
-//        radThirty      = findViewById(R.id.intv_thirty);
         spinInterval   =  findViewById(R.id.spin_interval);
         etSwitchDiff   = findViewById(R.id.switch_diff);
         etMinDistance  = findViewById(R.id.min_dist);
@@ -96,22 +89,6 @@ public class SettingsActivity extends AppCompatActivity {
         int intpos = getIndexOfInterval(UserOptions.getAlarmInterval());
         spinInterval.setSelection(intpos);
 
-//        switch (intv){
-//            case 1: radOne.setChecked(true);
-//            break;
-//
-//            case 2: radTwo.setChecked(true);
-//                break;
-//
-//            case 5: radFive.setChecked(true);
-//                break;
-//
-//            case 15: radFifteen.setChecked(true);
-//                break;
-//
-//            case 30: radThirty.setChecked(true);
-//                break;
-//        }
 
         if (UserOptions.isStopBackground() == true){
             tvStopThreshold.setEnabled(true);
@@ -127,38 +104,10 @@ public class SettingsActivity extends AppCompatActivity {
         oldMinDistance = UserOptions.getMinDistance();
         oldStopBackground = UserOptions.isStopBackground();
         oldStopThreshold = UserOptions.getStopThreshold();
+        oldAlarmInterval = UserOptions.getAlarmInterval();
     }
 
-//    public void onRadioButtonClicked(View view) {
-//        // Is the button now checked?
-//        boolean checked = ((RadioButton) view).isChecked();
-//
-//        // Check which radio button was clicked
-//        switch(view.getId()) {
-//            case R.id.intv_one:
-//                if (checked)
-//                    UserOptions.setAlarmInterval(1);
-//                    break;
-//            case R.id.intv_two:
-//                if (checked)
-//                    UserOptions.setAlarmInterval(2);
-//                    break;
-//            case R.id.intv_five:
-//                if (checked)
-//                    UserOptions.setAlarmInterval(5);
-//                    break;
-//            case R.id.intv_fifteen:
-//                if (checked)
-//                    UserOptions.setAlarmInterval(15);
-//                    break;
-//            case R.id.intv_thirty:
-//                if (checked)
-//                    UserOptions.setAlarmInterval(30);
-//                break;
-//        }
-//
-//        settingsChanged = true;
-//    }
+
 
     public class OnIntervalSelectedListener implements AdapterView.OnItemSelectedListener {
 
@@ -168,8 +117,9 @@ public class SettingsActivity extends AppCompatActivity {
 //                    Toast.LENGTH_SHORT).show();
           String item = (String) parent.getItemAtPosition(pos);
           UserOptions.setAlarmInterval(Integer.parseInt(item));
-          settingsChanged = true;
+//          settingsChanged = true;
         }
+
 
         @Override
         public void onNothingSelected(AdapterView<?> arg0) {
@@ -298,6 +248,9 @@ public class SettingsActivity extends AppCompatActivity {
             settingsChanged = true;
         }
         if (! getIntegerFromTextView(etStopThreshold).equals(oldStopThreshold))    {
+            settingsChanged = true;
+        }
+        if ( UserOptions.getAlarmInterval() != oldAlarmInterval){
             settingsChanged = true;
         }
 
