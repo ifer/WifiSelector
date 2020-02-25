@@ -15,6 +15,10 @@ public class UserOptions implements Serializable {
     public static final String OPTION_AUTOCONNECT = "opt_autoconnect";
     public static final String OPTION_SWITCH_DIFF = "opt_switchdiff";
     public static final String OPTION_MIN_DISTANCE = "opt_mindist";
+    public static final String OPTION_STOP_BACKGROUND = "opt_stop_background";
+    public static final String OPTION_STOP_THRESHOLD = "opt_stop_threshold";
+
+
 
 
     private static boolean runInBackground = true;
@@ -22,6 +26,9 @@ public class UserOptions implements Serializable {
     private static boolean autoConnectToStrongest = true;
     private static int minSwitchDiff = 10;
     private static int minDistance = 10;
+    private static boolean stopBackground = false;
+    private static int stopThreshold = 30;
+
     private static HashSet<String> selectedSSIDs = new HashSet<String>();
 
     private static SharedPreferences settings;
@@ -39,6 +46,9 @@ public class UserOptions implements Serializable {
         editor.putBoolean(OPTION_AUTOCONNECT, isAutoConnectToStrongest());
         editor.putInt(OPTION_SWITCH_DIFF, getMinSwitchDiff());
         editor.putInt(OPTION_MIN_DISTANCE, getMinDistance());
+        editor.putBoolean(OPTION_STOP_BACKGROUND, isStopBackground());
+        editor.putInt(OPTION_STOP_THRESHOLD, getStopThreshold());
+
 
         HashSet<String> selectedSSIDs = new HashSet<String>();
         selectedSSIDs.addAll(getSelectedSSIDs());
@@ -55,6 +65,8 @@ public class UserOptions implements Serializable {
         setRunInBackground(settings.getBoolean(OPTION_BACKGRND, true));
         setMinSwitchDiff(settings.getInt(OPTION_SWITCH_DIFF, 10));
         setMinDistance(settings.getInt(OPTION_MIN_DISTANCE, 10));
+        setStopBackground(settings.getBoolean(OPTION_STOP_BACKGROUND, false));
+        setStopThreshold(settings.getInt(OPTION_STOP_THRESHOLD, 30));
 
         HashSet<String> def = new HashSet<String>(); //default values: empty
         HashSet<String> ps = (HashSet<String>)settings.getStringSet(OPTION_SSIDS, def);
@@ -110,5 +122,21 @@ public class UserOptions implements Serializable {
 
     public static void setMinDistance(int minDistance) {
         UserOptions.minDistance = minDistance;
+    }
+
+    public static boolean isStopBackground() {
+        return stopBackground;
+    }
+
+    public static void setStopBackground(boolean stopBackground) {
+        UserOptions.stopBackground = stopBackground;
+    }
+
+    public static int getStopThreshold() {
+        return stopThreshold;
+    }
+
+    public static void setStopThreshold(int stopThreshold) {
+        UserOptions.stopThreshold = stopThreshold;
     }
 }

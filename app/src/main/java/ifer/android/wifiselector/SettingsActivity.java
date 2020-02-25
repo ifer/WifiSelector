@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import static ifer.android.wifiselector.AndroidUtils.*;
 
@@ -28,12 +29,17 @@ public class SettingsActivity extends AppCompatActivity {
     private RadioButton radThirty   ;
     private EditText etSwitchDiff   ;
     private EditText etMinDistance   ;
+    private CheckBox chkStopBackgrnd    ;
+    private EditText etStopThreshold;
+    private TextView tvStopThreshold;
 
     private boolean settingsChanged = false;
 
     private boolean oldRunInBackground;
     private int oldSwitchDiff;
     private int oldMinDistance;
+    private boolean oldStopBackground;
+    private int oldStopThreshold;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,10 @@ public class SettingsActivity extends AppCompatActivity {
         radThirty      = findViewById(R.id.intv_thirty);
         etSwitchDiff   = findViewById(R.id.switch_diff);
         etMinDistance  = findViewById(R.id.min_dist);
+        chkStopBackgrnd = findViewById(R.id.checkbox_stopbackground);
+        etStopThreshold = findViewById(R.id.stop_threshold);
+        tvStopThreshold = findViewById(R.id.tv_stop_threshold);
+
         loadUserOptions();
 
     }
@@ -64,6 +74,8 @@ public class SettingsActivity extends AppCompatActivity {
         chkAutoconnect.setChecked(UserOptions.isAutoConnectToStrongest());
         etSwitchDiff.setText(String.valueOf(UserOptions.getMinSwitchDiff()));
         etMinDistance.setText(String.valueOf(UserOptions.getMinDistance()));
+        chkStopBackgrnd.setChecked(UserOptions.isStopBackground());
+        etStopThreshold.setText(String.valueOf(UserOptions.getStopThreshold()));
 
         int intv = UserOptions.getAlarmInterval();
         switch (intv){
@@ -83,9 +95,20 @@ public class SettingsActivity extends AppCompatActivity {
                 break;
         }
 
+        if (UserOptions.isStopBackground() == true){
+            tvStopThreshold.setEnabled(true);
+            etStopThreshold.setEnabled(true);
+        }
+        else {
+            tvStopThreshold.setEnabled(false);
+            etStopThreshold.setEnabled(false);
+        }
+
         oldRunInBackground = UserOptions.isRunInBackground(); //keep initial value
         oldSwitchDiff = UserOptions.getMinSwitchDiff();
         oldMinDistance = UserOptions.getMinDistance();
+        oldStopBackground = UserOptions.isStopBackground();
+        oldStopThreshold = UserOptions.getStopThreshold();
     }
 
     public void onRadioButtonClicked(View view) {
@@ -137,6 +160,17 @@ public class SettingsActivity extends AppCompatActivity {
                 else
                     UserOptions.setAutoConnectToStrongest(false);
                 break;
+            case R.id.checkbox_stopbackground:
+                if(checked){
+                    UserOptions.setStopBackground(true);
+                    tvStopThreshold.setEnabled(true);
+                    etStopThreshold.setEnabled(true);
+                }
+                else {
+                    UserOptions.setStopBackground(false);
+                    tvStopThreshold.setEnabled(false);
+                    etStopThreshold.setEnabled(false);
+                }
 
         }
         settingsChanged = true;
@@ -158,6 +192,14 @@ public class SettingsActivity extends AppCompatActivity {
         }
         return (true);
     }
+    private boolean validateStopThreshold(){
+        Integer stopthres = getIntegerFromTextView(etStopThreshold);
+        if (stopthres == null || stopthres < 5){
+            showToastMessage(this, getString(R.string.error_stop_threshold));
+            return (false);
+        }
+        return(true);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -174,12 +216,19 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 }
 
+                if(UserOptions.isStopBackground() == true){
+                    if (validateStopThreshold() == false){
+                        return true;
+                    }
+                }
+
                 UserOptions.setMinSwitchDiff( getIntegerFromTextView(etSwitchDiff));
                 UserOptions.setMinDistance(getIntegerFromTextView(etMinDistance));
+                UserOptions.setStopThreshold(getIntegerFromTextView(etStopThreshold));
 
                 UserOptions.save();
 
-                //Notify main activity if runInBackground has chenged
+                //Notify main activity if runInBackground has changed
                 boolean runInBackgroundChanged = false;
                 if (UserOptions.isRunInBackground() != oldRunInBackground){
                     runInBackgroundChanged = true;
@@ -210,6 +259,9 @@ public class SettingsActivity extends AppCompatActivity {
             settingsChanged = true;
         }
         if (! getIntegerFromTextView(etMinDistance).equals(oldMinDistance))    {
+            settingsChanged = true;
+        }
+        if (! getIntegerFromTextView(etStopThreshold).equals(oldStopThreshold))    {
             settingsChanged = true;
         }
 
