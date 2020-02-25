@@ -10,13 +10,8 @@
     <string name="option_autoconnect">Automatically connect to the strongest wifi</string>
     <string name="option_switch_min_diff">Minimum percentage difference to switch wifi</string>
     <string name="option_min_distance">Minimum displacement (meters) to begin scanning</string>
-    <string-array name="options_array">
-        <item>Run constantly in the background</item>
-        <item>Monitoring time interval (minutes)</item>
-        <item>Automatically connect to the strongest wifi</item>
-    </string-array>
     <string name="option_stop_backround">Stop background updates when the phone is out of wifi network for a period of time</string>
-    <string name="option_stop_threshold">When offline more than (minutes):</string>
+    <string name="option_stop_threshold">When is out of wifi more than (minutes):</string>
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
     <string name="warn_not_saved">At least one setting has changed. Are you sure you want to cancel the change?</string>

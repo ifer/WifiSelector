@@ -10,10 +10,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import static ifer.android.wifiselector.AndroidUtils.*;
 
@@ -32,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
     private CheckBox chkStopBackgrnd    ;
     private EditText etStopThreshold;
     private TextView tvStopThreshold;
+    private Spinner spinInterval;
 
     private boolean settingsChanged = false;
 
@@ -40,6 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
     private int oldMinDistance;
     private boolean oldStopBackground;
     private int oldStopThreshold;
+//    private String[] intervals;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +58,26 @@ public class SettingsActivity extends AppCompatActivity {
 
         chkBackgrnd    = findViewById(R.id.checkbox_backgrnd);
         chkAutoconnect = findViewById(R.id.checkbox_autoconnect);
-        radOne         = findViewById(R.id.intv_one);
-        radTwo         = findViewById(R.id.intv_two);
-        radFive        = findViewById(R.id.intv_five);
-        radFifteen     = findViewById(R.id.intv_fifteen);
-        radThirty      = findViewById(R.id.intv_thirty);
+//        radOne         = findViewById(R.id.intv_one);
+//        radTwo         = findViewById(R.id.intv_two);
+//        radFive        = findViewById(R.id.intv_five);
+//        radFifteen     = findViewById(R.id.intv_fifteen);
+//        radThirty      = findViewById(R.id.intv_thirty);
+        spinInterval   =  findViewById(R.id.spin_interval);
         etSwitchDiff   = findViewById(R.id.switch_diff);
         etMinDistance  = findViewById(R.id.min_dist);
         chkStopBackgrnd = findViewById(R.id.checkbox_stopbackground);
         etStopThreshold = findViewById(R.id.stop_threshold);
         tvStopThreshold = findViewById(R.id.tv_stop_threshold);
+
+
+//        spinInterval.setOnItemClickListener(new OnIntervalSelectedListener());
+
+//        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, UserOptions.intervals);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, R.layout.interval_item, UserOptions.intervals);
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.interval_item);
+        spinInterval.setAdapter(spinnerArrayAdapter);
+        spinInterval.setOnItemSelectedListener(new OnIntervalSelectedListener());
 
         loadUserOptions();
 
@@ -77,23 +93,25 @@ public class SettingsActivity extends AppCompatActivity {
         chkStopBackgrnd.setChecked(UserOptions.isStopBackground());
         etStopThreshold.setText(String.valueOf(UserOptions.getStopThreshold()));
 
-        int intv = UserOptions.getAlarmInterval();
-        switch (intv){
-            case 1: radOne.setChecked(true);
-            break;
+        int intpos = getIndexOfInterval(UserOptions.getAlarmInterval());
+        spinInterval.setSelection(intpos);
 
-            case 2: radTwo.setChecked(true);
-                break;
-
-            case 5: radFive.setChecked(true);
-                break;
-
-            case 15: radFifteen.setChecked(true);
-                break;
-
-            case 30: radThirty.setChecked(true);
-                break;
-        }
+//        switch (intv){
+//            case 1: radOne.setChecked(true);
+//            break;
+//
+//            case 2: radTwo.setChecked(true);
+//                break;
+//
+//            case 5: radFive.setChecked(true);
+//                break;
+//
+//            case 15: radFifteen.setChecked(true);
+//                break;
+//
+//            case 30: radThirty.setChecked(true);
+//                break;
+//        }
 
         if (UserOptions.isStopBackground() == true){
             tvStopThreshold.setEnabled(true);
@@ -111,35 +129,53 @@ public class SettingsActivity extends AppCompatActivity {
         oldStopThreshold = UserOptions.getStopThreshold();
     }
 
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
+//    public void onRadioButtonClicked(View view) {
+//        // Is the button now checked?
+//        boolean checked = ((RadioButton) view).isChecked();
+//
+//        // Check which radio button was clicked
+//        switch(view.getId()) {
+//            case R.id.intv_one:
+//                if (checked)
+//                    UserOptions.setAlarmInterval(1);
+//                    break;
+//            case R.id.intv_two:
+//                if (checked)
+//                    UserOptions.setAlarmInterval(2);
+//                    break;
+//            case R.id.intv_five:
+//                if (checked)
+//                    UserOptions.setAlarmInterval(5);
+//                    break;
+//            case R.id.intv_fifteen:
+//                if (checked)
+//                    UserOptions.setAlarmInterval(15);
+//                    break;
+//            case R.id.intv_thirty:
+//                if (checked)
+//                    UserOptions.setAlarmInterval(30);
+//                break;
+//        }
+//
+//        settingsChanged = true;
+//    }
 
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.intv_one:
-                if (checked)
-                    UserOptions.setAlarmInterval(1);
-                    break;
-            case R.id.intv_two:
-                if (checked)
-                    UserOptions.setAlarmInterval(2);
-                    break;
-            case R.id.intv_five:
-                if (checked)
-                    UserOptions.setAlarmInterval(5);
-                    break;
-            case R.id.intv_fifteen:
-                if (checked)
-                    UserOptions.setAlarmInterval(15);
-                    break;
-            case R.id.intv_thirty:
-                if (checked)
-                    UserOptions.setAlarmInterval(30);
-                break;
+    public class OnIntervalSelectedListener implements AdapterView.OnItemSelectedListener {
+
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+//            Toast.makeText(parent.getContext(),
+//                    "OnItemSelectedListener : " + parent.getItemAtPosition(pos).toString(),
+//                    Toast.LENGTH_SHORT).show();
+          String item = (String) parent.getItemAtPosition(pos);
+          UserOptions.setAlarmInterval(Integer.parseInt(item));
+          settingsChanged = true;
         }
 
-        settingsChanged = true;
+        @Override
+        public void onNothingSelected(AdapterView<?> arg0) {
+            // TODO Auto-generated method stub
+        }
+
     }
 
     public void onCheckboxClicked(View view) {
@@ -292,5 +328,16 @@ public class SettingsActivity extends AppCompatActivity {
         public void onClick(DialogInterface dialog, int which) {
         }
     }
+
+    private int getIndexOfInterval(Integer intv){
+        for(int i=0; i<UserOptions.intervals.length; i++){
+            int interval = Integer.parseInt(UserOptions.intervals[i]);
+            if (intv == interval){
+                return (i);
+            }
+        }
+        return (-1);
+    }
+
 
 }

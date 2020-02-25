@@ -21,7 +21,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
-            android:layout_weight="0.8"
+            android:layout_weight="0.7"
             android:gravity="left"
             android:text="@string/option_backgrnd"
             android:textSize="18sp" />
@@ -29,65 +29,44 @@
         <CheckBox android:id="@+id/checkbox_backgrnd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.3"
             android:onClick="onCheckboxClicked"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="60dp"
         android:layout_marginTop="10dp"
+        android:orientation="horizontal"
         android:weightSum="1"
         android:paddingLeft="@dimen/form_horizontal_padding"
-        android:paddingRight="@dimen/form_horizontal_padding">
+        android:paddingRight="@dimen/form_horizontal_padding"
+        >
 
         <TextView
-            android:layout_width="0dip"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
-            android:layout_weight="0.8"
-            android:gravity="left"
+            android:layout_weight="0.7"
+            android:gravity="left|center_vertical"
             android:text="@string/option_interval"
             android:textSize="18sp" />
 
-        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="0dip"
+        <Spinner
+            android:id="@+id/spin_interval"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:orientation="vertical">
-            <RadioButton android:id="@+id/intv_one"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1"
-                android:onClick="onRadioButtonClicked"/>
-            <RadioButton android:id="@+id/intv_two"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2"
-                android:onClick="onRadioButtonClicked"/>
-            <RadioButton android:id="@+id/intv_five"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5"
-                android:onClick="onRadioButtonClicked"/>
-            <RadioButton android:id="@+id/intv_fifteen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="15"
-                android:onClick="onRadioButtonClicked"/>
-            <RadioButton android:id="@+id/intv_thirty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="30"
-                android:onClick="onRadioButtonClicked"/>
-        </RadioGroup>
+            android:layout_weight="0.3"
+            android:gravity="start"
+            android:textAlignment="textStart"
+            />
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
         android:weightSum="1"
@@ -98,7 +77,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
-            android:layout_weight="0.8"
+            android:layout_weight="0.7"
             android:gravity="left"
             android:text="@string/option_autoconnect"
             android:textSize="18sp" />
@@ -106,7 +85,7 @@
         <CheckBox android:id="@+id/checkbox_autoconnect"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.3"
             android:onClick="onCheckboxClicked"/>
 
     </LinearLayout>
@@ -124,7 +103,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
-            android:layout_weight="0.8"
+            android:layout_weight="0.7"
             android:gravity="left"
             android:scrollHorizontally="false"
             android:singleLine="false"
@@ -135,14 +114,14 @@
             android:id="@+id/switch_diff"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.3"
             android:inputType="number" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/form_horizontal_padding"
@@ -153,7 +132,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
-            android:layout_weight="0.8"
+            android:layout_weight="0.7"
             android:gravity="left"
             android:scrollHorizontally="false"
             android:singleLine="false"
@@ -164,14 +143,14 @@
             android:id="@+id/min_dist"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.3"
             android:inputType="number" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="95dp"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
         android:weightSum="1"
@@ -182,7 +161,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
-            android:layout_weight="0.8"
+            android:layout_weight="0.7"
             android:gravity="left"
             android:text="@string/option_stop_backround"
             android:textSize="18sp" />
@@ -190,7 +169,7 @@
         <CheckBox android:id="@+id/checkbox_stopbackground"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.3"
             android:onClick="onCheckboxClicked"/>
 
     </LinearLayout>
@@ -199,7 +178,6 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="40dp"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/form_horizontal_padding"
         android:paddingRight="@dimen/form_horizontal_padding"
@@ -210,9 +188,10 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/form_horizontal_margin"
-            android:layout_weight="0.8"
+            android:layout_weight="0.7"
             android:enabled="false"
             android:gravity="left"
+            android:paddingLeft="50dp"
             android:scrollHorizontally="false"
             android:singleLine="false"
             android:text="@string/option_stop_threshold"
@@ -222,7 +201,7 @@
             android:id="@+id/stop_threshold"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
+            android:layout_weight="0.3"
             android:enabled="false"
             android:inputType="number" />
 

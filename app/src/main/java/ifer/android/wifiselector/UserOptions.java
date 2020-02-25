@@ -18,7 +18,7 @@ public class UserOptions implements Serializable {
     public static final String OPTION_STOP_BACKGROUND = "opt_stop_background";
     public static final String OPTION_STOP_THRESHOLD = "opt_stop_threshold";
 
-
+    public static final String[] intervals = {"1", "2", "5", "15", "30"};
 
 
     private static boolean runInBackground = true;

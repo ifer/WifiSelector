@@ -21,7 +21,7 @@ public class EventReceiver extends BroadcastReceiver {
     public static final String ACTION_SCAN_WIFI = "scan_wifi";
 
     public static final String ACTION_STOP_LOCATION = "stop_location";
-    public static final int MAX_UNCONNECTED_TIME = 2;  //minutes
+//    public static final int MAX_UNCONNECTED_TIME = 2;  //minutes
 
     private Context context;
 
@@ -133,7 +133,7 @@ Log.d(TAG, "EventReceiver received: " + intent.getAction());
 
 //        PendingIntent pi=PendingIntent.getBroadcast(context, 0, i, 0);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, EventReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        long intervalMillis = MAX_UNCONNECTED_TIME * 60 * 1000;
+        long intervalMillis = UserOptions.getStopThreshold() * 60 * 1000;
         alarmManager.set (AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + intervalMillis, pendingIntent);
 
         unconnectedAlarmScheduled = true;
