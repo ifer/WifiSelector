@@ -223,6 +223,7 @@ Log.d(TAG, "LocationService onStartCommand");
             NotificationChannel notificationChannel = new NotificationChannel( MainActivity.CHANNEL_ID,
                     mContext.getString(R.string.notif_text),
                     importance);
+
 //            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
@@ -232,7 +233,8 @@ Log.d(TAG, "LocationService onStartCommand");
                 .setSmallIcon(R.drawable.wifi_sel_white)
                 .setAutoCancel(true)
                 .setContentTitle(mContext.getResources().getString(R.string.app_name))
-                .setContentText(mContext.getResources().getString(R.string.notif_text))
+                .setContentText(wifiSelector.getCurSSID())
+//                .setContentText(mContext.getResources().getString(R.string.notif_text))
                 .setContentIntent(pendingIntent)
                 .build();
 

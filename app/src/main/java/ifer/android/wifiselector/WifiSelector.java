@@ -49,18 +49,18 @@ Log.d(MainActivity.TAG, "scanWifi!");
 
 
         // Scan only if the device is already connected to an access point
-        if (checkWifiOnAndConnected() == false){
-Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
-            if (! eventReceiver.isUnconnectedAlarmScheduled()){
-                eventReceiver.scheduleUnconnectedAlarm();
-            }
-            return;
-        }
-        else {
-            if (eventReceiver.isUnconnectedAlarmScheduled()){
-                eventReceiver.cancelUnconnectedAlarm();
-            }
-        }
+//        if (checkWifiOnAndConnected() == false){
+//Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
+//            if (! eventReceiver.isUnconnectedAlarmScheduled()){
+//                eventReceiver.scheduleUnconnectedAlarm();
+//            }
+//            return;
+//        }
+//        else {
+//            if (eventReceiver.isUnconnectedAlarmScheduled()){
+//                eventReceiver.cancelUnconnectedAlarm();
+//            }
+//        }
 
         WifiScanResultsReceiver wifiScanResultsReceiver = GlobalApplication.getWifiScanResultsReceiver();
         if (! GlobalApplication.isResultsReceiverRegistered()) {
@@ -262,6 +262,7 @@ Log.d(MainActivity.TAG, "Wifi disabled or not connected. Doing nothing.");
 
     private void connectToWifiSSID(Context context, String ssid) {
         if (curSSID != null && curSSID.equals(ssid)){
+            Log.d(TAG, "Already connected to " + ssid);
             return;
         }
 Log.d(TAG, "Connecting to " + ssid);
